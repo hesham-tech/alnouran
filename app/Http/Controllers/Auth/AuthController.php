@@ -72,11 +72,18 @@ class AuthController extends Controller
 // }
 public function logout(Request $request)
 {
-    // الحصول على التوكن الحالي من خلال الكائن Request
-    $token = $request->user()->currentAccessToken();
-
-    // حذف التوكن الحالي
-    $token->delete();
+    $user = $request->user();
+    
+    if ($user) {
+        // If the user was authenticated via a Sanctum token
+        $token = $user->currentAccessToken();
+        if ($token && method_exists($token, 'delete')) {
+            $token->delete();
+        }
+        
+        // Also logout from the session-based guard if active
+        Auth::guard('web')->logout();
+    }
 
     return response()->json(['message' => 'Successfully logged out'], 200);
 }

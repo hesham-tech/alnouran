@@ -16,7 +16,7 @@
     "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2"
   },
   "resources/js/main.css": {
-    "file": "assets/main-b98b9632.css",
+    "file": "assets/main-11191bfb.css",
     "src": "resources/js/main.css"
   },
   "resources/js/main.js": {
@@ -27,18 +27,18 @@
       "assets/materialdesignicons-webfont-61e8aba5.ttf"
     ],
     "css": [
-      "assets/main-b98b9632.css"
+      "assets/main-11191bfb.css"
     ],
     "dynamicImports": [
       "resources/js/views/main/main.vue",
       "resources/js/views/main/order.vue"
     ],
-    "file": "assets/main-426e82f3.js",
+    "file": "assets/main-444ed558.js",
     "isEntry": true,
     "src": "resources/js/main.js"
   },
   "resources/js/views/main/main.vue": {
-    "file": "assets/main-a9c3e925.js",
+    "file": "assets/main-a72dca50.js",
     "imports": [
       "resources/js/main.js"
     ],
@@ -53,7 +53,7 @@
     "css": [
       "assets/order-e2feca10.css"
     ],
-    "file": "assets/order-9f3fee56.js",
+    "file": "assets/order-ce70a2b1.js",
     "imports": [
       "resources/js/main.js"
     ],

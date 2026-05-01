@@ -1,12 +1,12 @@
 <template>
   <div class="auth-wrapper d-flex align-center justify-center">
-    <v-card width="100%" max-width="550" class="auth-card pa-8 rounded-xl elevation-12">
-      <div class="text-center mb-6">
-        <v-avatar color="primary" size="64" class="mb-4">
-          <v-icon size="32" color="white">mdi-account-plus-outline</v-icon>
+    <v-card width="100%" max-width="550" class="auth-card pa-5 pa-sm-8 rounded-xl elevation-12">
+      <div class="text-center mb-4">
+        <v-avatar color="primary" size="56" class="mb-3">
+          <v-icon size="28" color="white">mdi-account-plus-outline</v-icon>
         </v-avatar>
-        <h1 class="text-h4 font-weight-bold mb-2">{{ $t('register') }}</h1>
-        <p class="text-muted text-body-2">انضم إلى Alnouran وابدأ في إدارة محطاتك</p>
+        <h1 class="text-h4 font-weight-bold mb-1">{{ $t('register') }}</h1>
+        <p class="text-muted text-body-2 px-4">انضم إلى Alnouran وابدأ في إدارة محطاتك</p>
       </div>
 
       <div class="d-flex justify-center py-4" v-if="stations == 'getData'">
@@ -29,6 +29,8 @@
               v-model="user.name"
               :label="$t('enterName')"
               prepend-inner-icon="mdi-account-outline"
+              variant="outlined"
+              density="comfortable"
               class="mb-2"
             ></v-text-field>
           </v-col>
@@ -38,6 +40,8 @@
               :label="$t('enterEmail')"
               type="email"
               prepend-inner-icon="mdi-email-outline"
+              variant="outlined"
+              density="comfortable"
               class="mb-2"
             ></v-text-field>
           </v-col>
@@ -47,6 +51,8 @@
               :label="$t('enterTelephone')"
               type="tel"
               prepend-inner-icon="mdi-phone-outline"
+              variant="outlined"
+              density="comfortable"
               class="mb-2"
             ></v-text-field>
           </v-col>
@@ -56,6 +62,8 @@
               :type="store.passToggle ? 'password' : 'text'"
               :label="$t('enterPassword')"
               prepend-inner-icon="mdi-lock-outline"
+              variant="outlined"
+              density="comfortable"
               :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
               @click:appendInner="store.passToggle = !store.passToggle"
               class="mb-2"
@@ -69,6 +77,8 @@
               item-title="name"
               item-value="id"
               prepend-inner-icon="mdi-briefcase-outline"
+              variant="outlined"
+              density="comfortable"
               class="mb-2"
             ></v-select>
           </v-col>
@@ -81,6 +91,8 @@
               item-value="id"
               :multiple="user.Job_title == 'engeneer'"
               prepend-inner-icon="mdi-domain"
+              variant="outlined"
+              density="comfortable"
               class="mb-2"
             ></v-select>
           </v-col>

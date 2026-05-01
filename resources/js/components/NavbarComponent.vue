@@ -10,14 +10,14 @@
 
     <v-spacer></v-spacer>
 
-    <div class="d-flex align-center px-4">
+    <div class="d-flex align-center px-2 px-sm-4">
       <v-switch
         @change="toggleTheme"
         v-model="switchd"
         color="primary"
         hide-details
         density="compact"
-        class="ml-4"
+        class="ml-2 ml-sm-4"
       >
         <template v-slot:label>
           <v-icon :icon="switchd ? 'mdi-weather-night' : 'mdi-weather-sunny'" size="small"></v-icon>
@@ -27,9 +27,17 @@
       <v-btn
         variant="tonal"
         color="primary"
+        icon="mdi-home-outline"
+        to="/"
+        class="text-none d-flex d-sm-none"
+        size="small"
+      ></v-btn>
+      <v-btn
+        variant="tonal"
+        color="primary"
         prepend-icon="mdi-home-outline"
         to="/"
-        class="text-none"
+        class="text-none d-none d-sm-flex"
       >
         الرئيسية
       </v-btn>

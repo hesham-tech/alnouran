@@ -14,20 +14,24 @@
         تفاصيل {{ PreparationData.name }}
       </v-card-title>
       <v-divider class="mb-4"></v-divider>
-      
+
       <v-row dense>
-        <v-col cols="6" v-for="(val, key) in {
-          'وقت التحضير': date(PreparationData.actual_time),
-          'المدة': PreparationData.cont_hours + ' ساعة',
-          'التركيز (ppm)': PreparationData.ppm,
-          'طن شرائح': PreparationData.slices_ton,
-          'كيلو خام': PreparationData.quantity,
-          'الوردية': PreparationData.shift,
-          'منذ': timeSince(PreparationData.actual_time) + ' ساعة',
-          'متبقي': timeSince2(PreparationData.actual_time, PreparationData.cont_hours) + ' ساعة',
-          'بواسطة': PreparationData.user_name,
-          'تم الإنشاء': date(PreparationData.created)
-        }" :key="key">
+        <v-col
+          cols="6"
+          v-for="(val, key) in {
+            'وقت التحضير': date(PreparationData.actual_time),
+            المدة: PreparationData.cont_hours + ' ساعة',
+            'التركيز (ppm)': PreparationData.ppm,
+            'طن شرائح': PreparationData.slices_ton,
+            'كيلو خام': PreparationData.quantity,
+            الوردية: PreparationData.shift,
+            منذ: timeSince(PreparationData.actual_time) + ' ساعة',
+            متبقي: timeSince2(PreparationData.actual_time, PreparationData.cont_hours) + ' ساعة',
+            بواسطة: PreparationData.user_name,
+            'تم الإنشاء': date(PreparationData.created),
+          }"
+          :key="key"
+        >
           <div class="text-caption text-muted">{{ key }}</div>
           <div class="text-body-2 font-weight-medium">{{ val }}</div>
         </v-col>
@@ -98,7 +102,14 @@
     </div>
 
     <v-row dense>
-      <v-col cols="12" sm="6" md="4" lg="3" v-for="typePrep in typePreparationData" :key="typePrep.id">
+      <v-col
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+        v-for="typePrep in typePreparationData"
+        :key="typePrep.id"
+      >
         <v-card class="preparation-card h-100 pa-3 border rounded-lg">
           <div class="d-flex justify-space-between align-start mb-2">
             <div class="text-subtitle-1 font-weight-bold truncate" style="max-width: 70%">
@@ -125,15 +136,19 @@
           <!-- Progress Section -->
           <div class="mb-3">
             <div class="d-flex justify-space-between text-caption mb-1">
-              <span class="text-muted">الاستهلاك</span>
-              <span :class="100 - typePrep.percentage <= 15 ? 'text-danger' : 'text-success'" class="font-weight-bold">
+              <span class="text-muted">المنسوب </span>
+              <span
+                :class="100 - typePrep.percentage <= 15 ? 'text-danger' : 'text-success'"
+                class="text-h6 font-weight-black"
+              >
                 {{ percentageResalt(100 - typePrep.percentage) }}%
               </span>
             </div>
             <v-progress-linear
               :model-value="100 - typePrep.percentage"
-              height="8"
-              rounded
+              height="14"
+              rounded="pill"
+              striped
               :color="100 - typePrep.percentage <= 15 ? 'error' : 'success'"
               bg-color="surface-variant"
               bg-opacity="0.2"
@@ -155,9 +170,14 @@
               {{ typePrep.user_name }}
             </v-col>
             <v-col cols="12" class="mt-2">
-               <v-chip size="x-small" variant="flat" color="surface-variant" class="w-100 justify-center">
-                 {{ date(typePrep.actual_time) }}
-               </v-chip>
+              <v-chip
+                size="x-small"
+                variant="flat"
+                color="surface-variant"
+                class="w-100 justify-center"
+              >
+                {{ date(typePrep.actual_time) }}
+              </v-chip>
             </v-col>
           </v-row>
         </v-card>

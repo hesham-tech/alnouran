@@ -1,12 +1,12 @@
 <template>
   <div class="auth-wrapper d-flex align-center justify-center">
-    <v-card width="100%" max-width="450" class="auth-card pa-8 rounded-xl elevation-12">
-      <div class="text-center mb-8">
-        <v-avatar color="primary" size="80" class="mb-4 elevation-4">
-          <v-icon size="40" color="white">mdi-shield-lock-outline</v-icon>
+    <v-card width="100%" max-width="450" class="auth-card pa-5 pa-sm-8 rounded-xl elevation-12">
+      <div class="text-center mb-6">
+        <v-avatar color="primary" size="70" class="mb-4 elevation-4">
+          <v-icon size="36" color="white">mdi-shield-lock-outline</v-icon>
         </v-avatar>
         <h1 class="text-h4 font-weight-bold mb-2">{{ $t('LogIn') }}</h1>
-        <p class="text-muted text-body-2">مرحباً بك مجدداً في Alnouran</p>
+        <p class="text-muted text-body-2 px-4">مرحباً بك مجدداً في Alnouran</p>
       </div>
 
       <v-form @submit.prevent="toLogIn" class="mt-4">
@@ -15,7 +15,9 @@
           :label="$t('Email')"
           prepend-inner-icon="mdi-email-outline"
           type="email"
-          class="mb-4"
+          variant="outlined"
+          density="comfortable"
+          class="mb-3"
         ></v-text-field>
 
         <v-text-field
@@ -23,9 +25,11 @@
           :type="store.passToggle ? 'password' : 'text'"
           :label="$t('enterPassword')"
           prepend-inner-icon="mdi-lock-outline"
+          variant="outlined"
+          density="comfortable"
           :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
           @click:appendInner="store.passToggle = !store.passToggle"
-          class="mb-6"
+          class="mb-4"
         ></v-text-field>
 
         <v-btn
@@ -42,7 +46,12 @@
 
       <div class="text-center mt-8 pt-4 border-t">
         <span class="text-muted text-body-2">{{ $t('dontAccount') }}</span>
-        <v-btn variant="text" color="primary" to="/auth/register" class="text-none px-2 font-weight-bold">
+        <v-btn
+          variant="text"
+          color="primary"
+          to="/auth/register"
+          class="text-none px-2 font-weight-bold"
+        >
           {{ $t('register') }}
         </v-btn>
       </div>
@@ -58,7 +67,7 @@ import axios from 'axios';
 const store = usemainStore();
 const userLog = ref({
   email: '',
-  password: ''
+  password: '',
 });
 
 function toLogIn() {
@@ -93,10 +102,10 @@ function toLogIn() {
 .auth-wrapper {
   min-height: 100vh;
   background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  padding: 20px;
+  padding: 5px;
 }
 
-[data-v-theme="dark"] .auth-wrapper {
+[data-v-theme='dark'] .auth-wrapper {
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 }
 
