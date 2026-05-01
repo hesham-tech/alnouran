@@ -211,30 +211,30 @@ onMounted(() => {
 function typePreparFunc() {
   store.getTypePre('latestPreparationActual.user').then(() => {
     for (let i = 0; i < store.typePreparation.length; i++) {
-      if (!store.typePreparation[i].latest_preparation_actual) continue;
+      const latest = store.typePreparation[i].latest_preparation_actual;
+      if (!latest) continue;
+
+      const hoursDifferenceValue = calculateHoursDifference(latest.actual_time);
+      const percentageValue = (hoursDifferenceValue / latest.cont_hours) * 100;
+
+      // Filter: If the displayed percentage (100 - percentageValue) is <= -200, skip it.
+      if (100 - percentageValue <= -200) continue;
+
       const newPreparationData = {
         id: store.typePreparation[i].id,
         name: store.typePreparation[i].name,
-        updated: store.typePreparation[i].latest_preparation_actual.updated_at,
-        created: store.typePreparation[i].latest_preparation_actual.created_at,
+        updated: latest.updated_at,
+        created: latest.created_at,
 
-        ppm: store.typePreparation[i].latest_preparation_actual.ppm,
-        shift: store.typePreparation[i].latest_preparation_actual.shift,
-        quantity: store.typePreparation[i].latest_preparation_actual.quantity,
-        slices_ton: store.typePreparation[i].latest_preparation_actual.slices_ton,
-        actual_time: store.typePreparation[i].latest_preparation_actual.actual_time,
-        cont_hours: store.typePreparation[i].latest_preparation_actual.cont_hours,
-        user_name: store.typePreparation[i].latest_preparation_actual.user?.name || 'N/A',
-        hoursDifference: calculateHoursDifference(
-          store.typePreparation[i].latest_preparation_actual.actual_time
-        ).toFixed(2),
-        percentage: (
-          (calculateHoursDifference(
-            store.typePreparation[i].latest_preparation_actual.actual_time
-          ) /
-            store.typePreparation[i].latest_preparation_actual.cont_hours) *
-          100
-        ).toFixed(2),
+        ppm: latest.ppm,
+        shift: latest.shift,
+        quantity: latest.quantity,
+        slices_ton: latest.slices_ton,
+        actual_time: latest.actual_time,
+        cont_hours: latest.cont_hours,
+        user_name: latest.user?.name || 'N/A',
+        hoursDifference: hoursDifferenceValue.toFixed(2),
+        percentage: percentageValue.toFixed(2),
       };
       typePreparationData.value.push(newPreparationData);
       store.overlay = false;
