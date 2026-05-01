@@ -126,11 +126,11 @@ export const usemainStore = defineStore('mainStore', {
       const response = await axios.get(`typePre?relation=${relation}`);
       return new Promise((resolve, reject) => {
         try {
-          if ((relation = 'latestPreparationActual.user')) {
+          if (relation === 'latestPreparationActual.user') {
             this.typePreparation = response.data;
             // console.log(this.typePreparation);
           }
-          if ((relation = 'preparations.user')) {
+          if (relation === 'preparations.user') {
             this.preparations = response.data;
             // console.log(this.preparations);
           }

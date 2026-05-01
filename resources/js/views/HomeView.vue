@@ -211,6 +211,7 @@ onMounted(() => {
 function typePreparFunc() {
   store.getTypePre('latestPreparationActual.user').then(() => {
     for (let i = 0; i < store.typePreparation.length; i++) {
+      if (!store.typePreparation[i].latest_preparation_actual) continue;
       const newPreparationData = {
         id: store.typePreparation[i].id,
         name: store.typePreparation[i].name,
@@ -223,7 +224,7 @@ function typePreparFunc() {
         slices_ton: store.typePreparation[i].latest_preparation_actual.slices_ton,
         actual_time: store.typePreparation[i].latest_preparation_actual.actual_time,
         cont_hours: store.typePreparation[i].latest_preparation_actual.cont_hours,
-        user_name: store.typePreparation[i].latest_preparation_actual.user.name,
+        user_name: store.typePreparation[i].latest_preparation_actual.user?.name || 'N/A',
         hoursDifference: calculateHoursDifference(
           store.typePreparation[i].latest_preparation_actual.actual_time
         ).toFixed(2),

@@ -20,7 +20,7 @@
         <v-text-field
           type="text"
           variant="outlined"
-          label="  "
+          label=" وصف نوع التحضيرة "
           v-model="newTypePreparation.description"
           :rules="[v => !!v || 'This field is required']"
         >
