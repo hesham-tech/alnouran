@@ -1,11 +1,5 @@
 <template>
   <!-- Dialogs -->
-  <v-dialog v-model="dialogedit" max-width="400">
-    <v-card class="pa-4 text-center">
-      <v-icon color="primary" size="48" class="mb-2">mdi-cog-sync</v-icon>
-      <v-card-title>جاري العمل على تعديل التحضيرة</v-card-title>
-    </v-card>
-  </v-dialog>
 
   <v-dialog v-model="dialogOpenIn" max-width="500">
     <v-card class="pa-4 card-compact">
@@ -119,17 +113,13 @@
               <v-btn
                 icon="mdi-eye-outline"
                 variant="text"
-                size="x-small"
                 color="secondary"
                 @click="openInFun(typePrep)"
               ></v-btn>
-              <v-btn
-                icon="mdi-pencil-outline"
-                variant="text"
-                size="x-small"
-                color="secondary"
-                @click="editInFun()"
-              ></v-btn>
+              <div class="d-flex" v-if="canManage(typePrep)">
+                <editPreparationComponent :preparation="typePrep" />
+                <deletePreparationComponent :preparation="typePrep" />
+              </div>
             </div>
           </div>
 
@@ -190,6 +180,8 @@ import moment from 'moment';
 import { onMounted, ref } from 'vue';
 import { usemainStore } from '@/store/mainStore';
 import addPreparationComponent from '../components/preparation/addPreparationComponent.vue';
+import editPreparationComponent from '../components/preparation/editPreparationComponent.vue';
+import deletePreparationComponent from '../components/preparation/deletePreparationComponent.vue';
 import { useRouter } from 'vue-router';
 const router = useRouter();
 const routerLists = router.getRoutes();
@@ -197,20 +189,12 @@ const store = usemainStore();
 const typePreparationData = ref([]);
 const PreparationData = ref('');
 const dialogOpenIn = ref(false);
-const dialogedit = ref(false);
-const hoursToAdd = 1; // عدد الساعات المراد إضافتها
-const dateN = new Date(); // الحصول على التاريخ والوقت الحاليين
-const oneHourInMilliseconds = 3600000; // تحويل ساعة إلى مللي ثانية
-dateN.setTime(dateN.getTime() + hoursToAdd * oneHourInMilliseconds);
-const now = moment();
-const diff = moment(dateN).diff(now, 'hours');
+
 function openInFun(typePrep) {
   PreparationData.value = typePrep;
   dialogOpenIn.value = true;
 }
-function editInFun() {
-  dialogedit.value = true;
-}
+const dialogedit = ref(false);
 function percentageResalt(percentage) {
   return percentage.toFixed();
 }
@@ -249,6 +233,7 @@ function typePreparFunc() {
 
       const newPreparationData = {
         id: store.typePreparation[i].id,
+        prep_id: latest.id,
         name: store.typePreparation[i].name,
         updated: latest.updated_at,
         created: latest.created_at,
@@ -259,6 +244,7 @@ function typePreparFunc() {
         slices_ton: latest.slices_ton,
         actual_time: latest.actual_time,
         cont_hours: latest.cont_hours,
+        user_id: latest.user_id,
         user_name: latest.user?.name || 'N/A',
         hoursDifference: hoursDifferenceValue.toFixed(2),
         percentage: percentageValue.toFixed(2),
@@ -266,13 +252,26 @@ function typePreparFunc() {
       typePreparationData.value.push(newPreparationData);
       store.overlay = false;
     }
-    function calculateHoursDifference(actualTime) {
-      const dataTime = new Date(actualTime);
-      const currentTime = new Date();
-      const timeDifference = currentTime - dataTime;
-      return timeDifference / (1000 * 60 * 60);
-    }
   });
+}
+
+function calculateHoursDifference(actualTime) {
+  const dataTime = new Date(actualTime);
+  const currentTime = new Date();
+  const timeDifference = currentTime - dataTime;
+  return timeDifference / (1000 * 60 * 60);
+}
+
+function canManage(typePrep) {
+  // Only the creator can manage
+  if (typePrep.user_id !== store.user.id) return false;
+
+  // Check if it's been more than 3 hours
+  const createdTime = new Date(typePrep.created);
+  const currentTime = new Date();
+  const diffInHours = (currentTime - createdTime) / (1000 * 60 * 60);
+
+  return diffInHours <= 3;
 }
 </script>
 <style scoped>

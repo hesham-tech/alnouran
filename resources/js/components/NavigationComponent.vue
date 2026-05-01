@@ -13,7 +13,9 @@
       <v-list-item
         rounded="lg"
         class="mb-2"
-        :prepend-avatar="'https://ui-avatars.com/api/?name=' + store.user.name + '&background=4f46e5&color=fff'"
+        :prepend-avatar="
+          'https://ui-avatars.com/api/?name=' + store.user.name + '&background=4f46e5&color=fff'
+        "
         :title="store.user.name"
         subtitle="عضو نشط"
         to="/user/edit"
@@ -40,7 +42,7 @@
         rounded="lg"
         color="primary"
       ></v-list-item>
-      
+
       <v-list-item
         prepend-icon="mdi-calendar-check-outline"
         :title="$t('Vacations')"
@@ -92,12 +94,12 @@
           block
           color="error"
           variant="tonal"
-          prepend-icon="mdi-logout"
           @click="toLogout"
-          class="text-none"
-          :icon="rail"
+          class="text-none rounded-xl font-weight-bold logout-btn"
+          height="48"
         >
-          {{ rail ? '' : 'تسجيل الخروج' }}
+          <v-icon :start="!rail" size="22">mdi-logout</v-icon>
+          <span v-if="!rail">تسجيل الخروج</span>
         </v-btn>
       </div>
     </template>
@@ -114,9 +116,12 @@ const rail = ref(false);
 const pageWidth = ref(window.innerWidth);
 
 onMounted(() => {
-  rail.value = pageWidth.value <= 765;
+  // On mobile, we never want rail mode. We want a full drawer that can be toggled.
   if (pageWidth.value <= 765) {
+    rail.value = false;
     store.drawer = false;
+  } else {
+    rail.value = false; // Default to full on desktop too, or user can toggle
   }
   window.addEventListener('resize', handleResize);
 });
@@ -124,7 +129,7 @@ onMounted(() => {
 const handleResize = () => {
   pageWidth.value = window.innerWidth;
   if (pageWidth.value <= 765) {
-    rail.value = true;
+    rail.value = false;
   }
 };
 
@@ -157,5 +162,15 @@ function toLogout() {
 
 :deep(.v-list-item__prepend .v-icon) {
   opacity: 1;
+}
+
+.logout-btn {
+  transition: all 0.3s ease;
+  border: 1px solid rgba(var(--v-theme-error), 0.1);
+}
+
+.logout-btn:hover {
+  background-color: rgba(var(--v-theme-error), 0.15) !important;
+  transform: translateY(-1px);
 }
 </style>
