@@ -149,6 +149,8 @@ const props = defineProps({
   },
 });
 
+const emit = defineEmits(['refresh']);
+
 const store = usemainStore();
 const editedPreparation = ref({ ...props.preparation });
 const dialogEditPreparation = ref(false);
@@ -177,19 +179,26 @@ watchEffect(() => {
 });
 
 function updatePreparation() {
+  if (!editedPreparation.value.prep_id) {
+    console.error('prep_id is missing!', editedPreparation.value);
+    store.startSnack('خطأ: لا يوجد معرف للتحضيرة', 'no', 'danger');
+    return;
+  }
+
   axios
-    .patch(`Pre/${editedPreparation.value.prep_id}`, editedPreparation.value)
+    .put(`Pre/${editedPreparation.value.prep_id}`, editedPreparation.value)
     .then(() => {
       dialogEditPreparation.value = false;
       store.startSnack('تم تحديث التحضيرة بنجاح', 'no', 'success');
-      location.reload();
+      emit('refresh');
     })
     .catch(e => {
+      console.error('Update error:', e.response?.status, e.response?.data);
       if (e.response?.data) {
         messageError.value = e.response.data;
         dialogError.value = true;
       }
-      store.startSnack('حدث خطأ أثناء التحديث', 'no', 'danger');
+      store.startSnack('حدث خطأ أثناء التحديث: ' + (e.response?.status || ''), 'no', 'danger');
     });
 }
 </script>

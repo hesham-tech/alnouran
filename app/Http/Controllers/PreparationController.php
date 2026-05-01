@@ -55,11 +55,13 @@ class PreparationController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Preparation  $preparation
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(Preparation $preparation)
+    public function show($id)
     {
+        $preparation = Preparation::find($id);
+        
         if (!$preparation) {
             return response()->json(['message' => 'Preparation not found'], 404);
         }
@@ -71,11 +73,13 @@ class PreparationController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Preparation  $preparation
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, Preparation $preparation)
+    public function update(Request $request, $id)
     {
+        $preparation = Preparation::find($id);
+
         if (!$preparation) {
             return response()->json(['message' => 'Preparation not found'], 404);
         }
@@ -107,11 +111,13 @@ class PreparationController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Preparation  $preparation
+     * @param  int  $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(Preparation $preparation)
+    public function destroy($id)
     {
+        $preparation = Preparation::find($id);
+
         if (!$preparation) {
             return response()->json(['message' => 'Preparation not found'], 404);
         }

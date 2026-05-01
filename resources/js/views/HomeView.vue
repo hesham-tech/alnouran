@@ -41,7 +41,7 @@
   <div class="dashboard-container pa-4">
     <!-- Floating Add Button -->
     <div class="fab-container">
-      <addPreparationComponent />
+      <addPreparationComponent @refresh="typePreparFunc" />
     </div>
 
     <!-- User & Stations Header -->
@@ -117,8 +117,8 @@
                 @click="openInFun(typePrep)"
               ></v-btn>
               <div class="d-flex" v-if="canManage(typePrep)">
-                <editPreparationComponent :preparation="typePrep" />
-                <deletePreparationComponent :preparation="typePrep" />
+                <editPreparationComponent :preparation="typePrep" @refresh="typePreparFunc" />
+                <deletePreparationComponent :preparation="typePrep" @refresh="typePreparFunc" />
               </div>
             </div>
           </div>

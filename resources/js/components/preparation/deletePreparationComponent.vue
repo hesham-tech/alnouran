@@ -49,20 +49,28 @@ const props = defineProps({
 });
 
 const store = usemainStore();
+const emit = defineEmits(['refresh']);
 const dialogDelete = ref(false);
 const loading = ref(false);
 
 function deletePreparation() {
+  if (!props.preparation.prep_id) {
+    console.error('prep_id is missing!', props.preparation);
+    store.startSnack('خطأ: لا يوجد معرف للتحضيرة', 'no', 'danger');
+    return;
+  }
+
   loading.value = true;
   axios
     .delete(`Pre/${props.preparation.prep_id}`)
     .then(() => {
       dialogDelete.value = false;
       store.startSnack('تم حذف التحضيرة بنجاح', 'no', 'success');
-      location.reload();
+      emit('refresh');
     })
-    .catch(() => {
-      store.startSnack('حدث خطأ أثناء الحذف', 'no', 'danger');
+    .catch((e) => {
+      console.error('Delete error:', e.response?.status, e.response?.data);
+      store.startSnack('حدث خطأ أثناء الحذف: ' + (e.response?.status || ''), 'no', 'danger');
     })
     .finally(() => {
       loading.value = false;

@@ -169,6 +169,7 @@ import { usemainStore } from '../../store/mainStore';
 import axios from 'axios';
 
 const store = usemainStore();
+const emit = defineEmits(['refresh']);
 const newPreparation = ref({});
 const dialogAddPreparation = ref(false);
 const dialogError = ref(false);
@@ -235,7 +236,7 @@ function addPreparation() {
       newPreparation.value = {};
       typePreparation.value = null;
       store.startSnack('تم إضافة التحضيرة بنجاح', 'no', 'success');
-      location.reload();
+      emit('refresh');
     })
     .catch(e => {
       if (e.response?.data) {
