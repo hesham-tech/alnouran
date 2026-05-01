@@ -15,35 +15,30 @@
     "file": "assets/materialdesignicons-webfont-662fefa8.woff2",
     "src": "node_modules/@mdi/font/fonts/materialdesignicons-webfont.woff2"
   },
-  "resources/js/assets/Report.png": {
-    "file": "assets/Report-3f69b310.png",
-    "src": "resources/js/assets/Report.png"
-  },
   "resources/js/main.css": {
-    "file": "assets/main-e64e7bce.css",
+    "file": "assets/main-b98b9632.css",
     "src": "resources/js/main.css"
   },
   "resources/js/main.js": {
     "assets": [
-      "assets/Report-3f69b310.png",
       "assets/materialdesignicons-webfont-0b183104.eot",
       "assets/materialdesignicons-webfont-662fefa8.woff2",
       "assets/materialdesignicons-webfont-a5928a0d.woff",
       "assets/materialdesignicons-webfont-61e8aba5.ttf"
     ],
     "css": [
-      "assets/main-e64e7bce.css"
+      "assets/main-b98b9632.css"
     ],
     "dynamicImports": [
       "resources/js/views/main/main.vue",
       "resources/js/views/main/order.vue"
     ],
-    "file": "assets/main-c8f0d348.js",
+    "file": "assets/main-426e82f3.js",
     "isEntry": true,
     "src": "resources/js/main.js"
   },
   "resources/js/views/main/main.vue": {
-    "file": "assets/main-4b96e0b5.js",
+    "file": "assets/main-a9c3e925.js",
     "imports": [
       "resources/js/main.js"
     ],
@@ -58,7 +53,7 @@
     "css": [
       "assets/order-e2feca10.css"
     ],
-    "file": "assets/order-260519f9.js",
+    "file": "assets/order-9f3fee56.js",
     "imports": [
       "resources/js/main.js"
     ],

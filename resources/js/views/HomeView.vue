@@ -1,159 +1,165 @@
 <template>
-  <v-dialog v-model="dialogedit">
-    <v-card class="p-3">
-      <v-card-title> جار العمل علي تعديل التحضرة </v-card-title>
+  <!-- Dialogs -->
+  <v-dialog v-model="dialogedit" max-width="400">
+    <v-card class="pa-4 text-center">
+      <v-icon color="primary" size="48" class="mb-2">mdi-cog-sync</v-icon>
+      <v-card-title>جاري العمل على تعديل التحضيرة</v-card-title>
     </v-card>
   </v-dialog>
-  <!-- end dialogedit -->
-  <v-dialog v-model="dialogOpenIn">
-    <v-card class="p-3">
-      <v-card-title><span> تفاصيل تحضيرة </span> {{ PreparationData.name }}</v-card-title>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1"> وقت التحضير </span>
-        <span style="text-wrap: wrap" class="p-1">{{ date(PreparationData.actual_time) }}</span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1">{{ PreparationData.cont_hours }}</span> <span class="p-1"> ساعة </span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1">{{ PreparationData.ppm }}</span>
-        <span class="p-1"> ppm </span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1">{{ PreparationData.slices_ton }}</span>
-        <span class="p-1"> طن شرائح </span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1">{{ PreparationData.quantity }}</span>
-        <span class="p-1"> كيلو خام </span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1"> الوردية </span>
-        <span class="p-1">{{ PreparationData.shift }}</span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1"> منذ </span>
-        <span class="p-1">{{ timeSince(PreparationData.actual_time) }}</span>
-        <span class="p-1"> ساعة </span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1"> متبقي </span>
-        <span class="p-1">{{
-          timeSince2(PreparationData.actual_time, PreparationData.cont_hours)
-        }}</span>
-        <span class="p-1"> ساعة </span>
-      </v-chip>
 
-      <v-chip v-if="PreparationData.user_name" class="ma-1" color="primary" label>
-        <span class="p-1"> بواسطة </span>
-        <span class="p-1">{{ PreparationData.user_name }}</span>
-      </v-chip>
-      <v-chip class="ma-1" color="primary" label>
-        <span class="p-1"> تم الانشاء </span>
-        <span class="p-1">{{ date(PreparationData.created) }}</span>
-      </v-chip>
-      <v-chip
-        class="ma-1"
-        v-if="PreparationData.created != PreparationData.updated"
-        color="primary"
-        label
-      >
-        <span class="p-1"> تم التحديث </span>
-        <span class="p-1">{{ date(PreparationData.updated) }}</span>
-      </v-chip>
+  <v-dialog v-model="dialogOpenIn" max-width="500">
+    <v-card class="pa-4 card-compact">
+      <v-card-title class="d-flex align-center pb-2">
+        <v-icon color="primary" class="mr-2">mdi-information-outline</v-icon>
+        تفاصيل {{ PreparationData.name }}
+      </v-card-title>
+      <v-divider class="mb-4"></v-divider>
+      
+      <v-row dense>
+        <v-col cols="6" v-for="(val, key) in {
+          'وقت التحضير': date(PreparationData.actual_time),
+          'المدة': PreparationData.cont_hours + ' ساعة',
+          'التركيز (ppm)': PreparationData.ppm,
+          'طن شرائح': PreparationData.slices_ton,
+          'كيلو خام': PreparationData.quantity,
+          'الوردية': PreparationData.shift,
+          'منذ': timeSince(PreparationData.actual_time) + ' ساعة',
+          'متبقي': timeSince2(PreparationData.actual_time, PreparationData.cont_hours) + ' ساعة',
+          'بواسطة': PreparationData.user_name,
+          'تم الإنشاء': date(PreparationData.created)
+        }" :key="key">
+          <div class="text-caption text-muted">{{ key }}</div>
+          <div class="text-body-2 font-weight-medium">{{ val }}</div>
+        </v-col>
+      </v-row>
+
+      <v-card-actions class="mt-4">
+        <v-spacer></v-spacer>
+        <v-btn color="primary" variant="text" @click="dialogOpenIn = false">إغلاق</v-btn>
+      </v-card-actions>
     </v-card>
   </v-dialog>
-  <div style="position: relative">
-    <div class="addPreparation">
+
+  <div class="dashboard-container pa-4">
+    <!-- Floating Add Button -->
+    <div class="fab-container">
       <addPreparationComponent />
     </div>
-    <!-- <speedDialComponent/> -->
-    <v-card class="mx-auto" width="100%" variant="tonal" elevation="9">
-      <routerLink to="/user/edit">
-        <v-card-title>
-          {{ store.user.name }}
-          <v-card-subtitle>
-            {{ store.user.email }}
-          </v-card-subtitle>
-        </v-card-title>
-      </routerLink>
-      <router-link
-        :to="`/station/${station.id}`"
-        v-for="(station, i) in store.user.stations"
-        :key="i"
-      >
-        <v-chip class="m-1">
-          {{ station.name }}
-        </v-chip>
-      </router-link>
+
+    <!-- User & Stations Header -->
+    <v-card class="mb-6 pa-4 border shadow-sm rounded-lg bg-surface">
+      <v-row align="center" no-gutters>
+        <v-col cols="auto" class="mr-4">
+          <v-avatar color="primary" size="64">
+            <span class="text-h5">{{ store.user.name.charAt(0) }}</span>
+          </v-avatar>
+        </v-col>
+        <v-col>
+          <div class="text-h5 font-weight-bold">{{ store.user.name }}</div>
+          <div class="text-caption text-muted mb-2">{{ store.user.email }}</div>
+          <div class="d-flex flex-wrap gap-1">
+            <v-chip
+              v-for="station in store.user.stations"
+              :key="station.id"
+              size="x-small"
+              variant="tonal"
+              color="primary"
+              :to="`/station/${station.id}`"
+              class="mr-1"
+            >
+              {{ station.name }}
+            </v-chip>
+          </div>
+        </v-col>
+      </v-row>
     </v-card>
-    <!-- slide-group link  -->
-    <v-slide-group class="mt-4" show-arrows>
+
+    <!-- Navigation Quick Links -->
+    <v-slide-group class="mb-6" show-arrows>
       <v-slide-group-item v-for="(routerList, i) in routerLists" :key="i">
-        <router-link v-if="routerList.meta.show" :to="routerList.path"
-          ><v-chip color="primary" variant="outlined" class="m-1">
-            {{ routerList.meta.titleAr }}</v-chip
-          ></router-link
+        <v-btn
+          v-if="routerList.meta.show"
+          :to="routerList.path"
+          variant="tonal"
+          color="secondary"
+          size="small"
+          rounded="pill"
+          class="ma-1 text-none"
         >
+          {{ routerList.meta.titleAr }}
+        </v-btn>
       </v-slide-group-item>
     </v-slide-group>
-    <!-- <v-row class="div-balance text-center">
-      <v-col cols="12">
-        <router-link to="/vacations">
-          <div class="box-balance">
-            <div class="item-balance">الاعتيادية</div>
-            <div class="item-balance">{{ store.regular }}</div>
-          </div>
-        </router-link>
-      </v-col>
-    </v-row> -->
-    <v-row class="my-3">
-      <v-col cols="12" md="4" v-for="typePrep in typePreparationData" :key="typePrep.id">
-        <v-card class="p-39j" elevation="5" v-if="typePreparationData">
-          <div class="btn_action">
-            <v-btn
-              color="red-lighten-6"
-              icon="mdi-eye-outline"
-              variant="text"
-              @click="openInFun(typePrep)"
-            ></v-btn>
-            <v-btn
-              color="red-lighten-6"
-              icon="mdi-text-box-edit-outline"
-              variant="text"
-              @click="editInFun()"
-            ></v-btn>
-          </div>
-          <div class="box_details p-1">
-            <p>ppm {{ typePrep.ppm }}</p>
-            <p>{{ typePrep.user_name }}</p>
-          </div>
-          <div class="preparation_box">
-            <div class="percentage">
-              <p>{{ typePrep.name }}</p>
-              <p>% {{ percentageResalt(100 - typePrep.percentage) }}</p>
+
+    <!-- Preparations Grid -->
+    <div class="section-title mb-4 d-flex align-center">
+      <v-icon class="mr-2" color="primary">mdi-flask-outline</v-icon>
+      <span class="text-h6 font-weight-bold">التحضيرات الحالية</span>
+    </div>
+
+    <v-row dense>
+      <v-col cols="12" sm="6" md="4" lg="3" v-for="typePrep in typePreparationData" :key="typePrep.id">
+        <v-card class="preparation-card h-100 pa-3 border rounded-lg">
+          <div class="d-flex justify-space-between align-start mb-2">
+            <div class="text-subtitle-1 font-weight-bold truncate" style="max-width: 70%">
+              {{ typePrep.name }}
             </div>
-            <div
-              :style="{
-                height: 100 - typePrep.percentage + '%',
-                'background-color': 100 - typePrep.percentage <= 10 ? 'red' : '#14cc14',
-              }"
-              class="preparation_fill"
-            ></div>
+            <div class="d-flex">
+              <v-btn
+                icon="mdi-eye-outline"
+                variant="text"
+                size="x-small"
+                color="secondary"
+                @click="openInFun(typePrep)"
+              ></v-btn>
+              <v-btn
+                icon="mdi-pencil-outline"
+                variant="text"
+                size="x-small"
+                color="secondary"
+                @click="editInFun()"
+              ></v-btn>
+            </div>
           </div>
-          <div class="mt-2 d-flex">
-            <v-chip class="ma-1" color="primary" label>
-              <span class="p-1">{{ typePrep.cont_hours }}</span> <span class="p-1"> ساعة </span>
-            </v-chip>
-            <v-chip class="ma-1" color="primary" label>
-              <span class="p-1"> متبقي </span>
-              <span class="p-1">{{ timeSince2(typePrep.actual_time, typePrep.cont_hours) }}</span>
-            </v-chip>
-            <!-- <v-chip color="primary" label> <span class="p-1"> وقت التحضير </span> </v-chip> -->
-            <v-chip class="ma-1" color="primary" label>
-              <span style="text-wrap: wrap" class="p-1">{{ date(typePrep.actual_time) }}</span>
-            </v-chip>
+
+          <!-- Progress Section -->
+          <div class="mb-3">
+            <div class="d-flex justify-space-between text-caption mb-1">
+              <span class="text-muted">الاستهلاك</span>
+              <span :class="100 - typePrep.percentage <= 15 ? 'text-danger' : 'text-success'" class="font-weight-bold">
+                {{ percentageResalt(100 - typePrep.percentage) }}%
+              </span>
+            </div>
+            <v-progress-linear
+              :model-value="100 - typePrep.percentage"
+              height="8"
+              rounded
+              :color="100 - typePrep.percentage <= 15 ? 'error' : 'success'"
+              bg-color="surface-variant"
+              bg-opacity="0.2"
+            ></v-progress-linear>
           </div>
+
+          <!-- Card Details Grid -->
+          <v-row no-gutters class="text-caption">
+            <v-col cols="6" class="mb-1">
+              <v-icon size="14" class="mr-1 text-muted">mdi-timer-outline</v-icon>
+              {{ typePrep.cont_hours }}س
+            </v-col>
+            <v-col cols="6" class="mb-1 text-right">
+              <v-icon size="14" class="mr-1 text-muted">mdi-clock-check-outline</v-icon>
+              {{ timeSince2(typePrep.actual_time, typePrep.cont_hours) }}س
+            </v-col>
+            <v-col cols="12" class="text-muted truncate">
+              <v-icon size="14" class="mr-1">mdi-account-outline</v-icon>
+              {{ typePrep.user_name }}
+            </v-col>
+            <v-col cols="12" class="mt-2">
+               <v-chip size="x-small" variant="flat" color="surface-variant" class="w-100 justify-center">
+                 {{ date(typePrep.actual_time) }}
+               </v-chip>
+            </v-col>
+          </v-row>
         </v-card>
       </v-col>
     </v-row>
@@ -199,7 +205,7 @@ function timeSince2(actual_time, cont_hours) {
   return (cont_hours - actua_time).toFixed(2);
 }
 function date(d) {
-  return moment(d).format('dddd :- h:mm A - MM/DD ');
+  return moment(d).locale('ar').format('dddd :- h:mm A - MM/DD');
 }
 onMounted(() => {
   store.getAbsences();
@@ -209,6 +215,7 @@ onMounted(() => {
 });
 
 function typePreparFunc() {
+  typePreparationData.value = [];
   store.getTypePre('latestPreparationActual.user').then(() => {
     for (let i = 0; i < store.typePreparation.length; i++) {
       const latest = store.typePreparation[i].latest_preparation_actual;
@@ -249,74 +256,57 @@ function typePreparFunc() {
 }
 </script>
 <style scoped>
-.addPreparation {
-  position: fixed;
-  top: 85%;
-  left: 67%;
-  z-index: 999;
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
 }
-a {
-  text-decoration: none;
+
+.preparation-card {
+  transition: all 0.2s ease-in-out;
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
 }
-.preparation_box {
-  position: relative;
-  width: 100%;
-  height: 20vh;
-  border-bottom: 5px solid blue;
-  border-left: 5px solid blue;
-  border-right: 5px solid blue;
-  border-radius: 0 0 20px 20px;
+
+.preparation-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md) !important;
+  border-color: var(--primary) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.text-danger {
+  color: var(--danger) !important;
+}
+
+.text-success {
+  color: var(--success) !important;
+}
+
+.truncate {
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.preparation_fill {
-  position: absolute;
-  bottom: 0px;
-  width: 100%;
-  box-sizing: unset;
-}
-.pre_fill_red {
-  background-color: red;
-}
-.pre_fill_green {
-  background-color: #14cc14;
-}
-.percentage {
-  position: absolute;
-  width: 100%;
-  font-weight: bold;
-  top: 2px;
-  text-align: center;
-  position: absolute;
-  display: flex;
-  z-index: 1;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  flex-wrap: wrap;
-}
-.btn_action {
-  display: flex !important;
-  z-index: 9;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  top: 3px;
-  right: 9px;
-}
-.box_details {
-  display: flex !important;
-  z-index: 9;
-  flex-direction: column;
-  align-items: center;
-  position: absolute;
-  top: 3px;
-  left: 9px;
+.gap-1 {
+  gap: 4px;
 }
 
-.d-flex {
-  display: flex !important;
-  align-content: stretch;
-  flex-wrap: wrap;
+.fab-container {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  z-index: 100;
+}
+
+:deep(.v-chip) {
+  font-weight: 500;
+}
+
+.shadow-sm {
+  box-shadow: var(--shadow-sm) !important;
 }
 </style>

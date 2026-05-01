@@ -1,162 +1,168 @@
 <template>
-  <div>
-    <!-- New Preparation -->
-    <v-btn class="m-1" color="green" text @click="dialogAddPreparation = true">اضافة تحضيرة </v-btn>
-    <v-dialog v-model="dialogAddPreparation">
-      <v-card class="p-3">
-        <v-container>
-          <v-card-title class="text-center mb-3"> اضافة تحضيرة </v-card-title>
-          <v-row>
-            <v-col style="padding: 0px" class="castm_col" cols="12">
-              <v-select
-                label=" نوع التحضيرة  "
-                :items="store.typePreparation"
-                item-title="name"
-                item-value="id"
-                return-object
-                @update:model-value="shangePrep"
-              >
-              </v-select>
-            </v-col>
-            <v-col v-if="stations.length > 1" style="padding: 0px" class="castm_col" cols="12">
-              <v-select
-                label=" اختر المحطة "
-                :items="stations"
-                item-title="name"
-                item-value="id"
-                auto-select-first
-                v-model="newPreparation.station_id"
-              >
-              </v-select>
-            </v-col>
-            <v-col style="padding: 0px 0px 0 3px" class="castm_col" cols="6">
-              <v-text-field
-                type="datetime-local"
-                variant="outlined"
-                @update:model-value="quantityFin"
-                label=" وقت التحضيرة "
-                v-model="newPreparation.actual_time"
-              >
-              </v-text-field>
-            </v-col>
-            <v-col style="padding: 0 3px 0 0" class="castm_col" cols="6">
-              <v-text-field
-                type="number"
-                variant="outlined"
-                @update:model-value="quantityFin"
-                label=" ppm "
-                v-model="newPreparation.ppm"
-              >
-              </v-text-field>
-            </v-col>
-            <v-col style="padding: 0 0 0 3px" class="castm_col" cols="6">
-              <v-text-field
-                type="number"
-                variant="outlined"
-                @update:model-value="quantityFin"
-                label=" عدد الساعات "
-                v-model="newPreparation.cont_hours"
-              >
-              </v-text-field>
-            </v-col>
-            <v-col style="padding: 0 3px 0 0" class="castm_col" cols="6">
-              <v-text-field
-                type="number"
-                variant="outlined"
-                @update:model-value="quantityFin"
-                label=" طن الشرائح "
-                v-model="newPreparation.slices_ton"
-              >
-              </v-text-field>
-            </v-col>
-            <v-col style="padding: 0px" class="castm_col" cols="6">
-              <div class="label_quantity">
-                <div>
-                  <h3>كيلو</h3>
+  <div class="d-inline-block">
+    <v-btn
+      color="success"
+      prepend-icon="mdi-plus"
+      @click="dialogAddPreparation = true"
+      class="rounded-lg font-weight-bold"
+    >
+      إضافة تحضيرة
+    </v-btn>
+
+    <v-dialog v-model="dialogAddPreparation" max-width="600">
+      <v-card class="rounded-xl border overflow-hidden bg-surface">
+        <div class="pa-6 border-b bg-surface-variant bg-opacity-5 d-flex align-center">
+          <v-icon color="success" class="mr-3">mdi-flask-plus-outline</v-icon>
+          <span class="text-h6 font-weight-bold">إضافة تحضيرة جديدة</span>
+          <v-spacer></v-spacer>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="dialogAddPreparation = false"></v-btn>
+        </div>
+
+        <v-card-text class="pa-6">
+          <v-form ref="form" @submit.prevent="addPreparation">
+            <v-row dense>
+              <v-col cols="12" md="6">
+                <v-select
+                  v-model="typePreparation"
+                  label="نوع التحضيرة"
+                  :items="store.typePreparation"
+                  item-title="name"
+                  item-value="id"
+                  variant="outlined"
+                  return-object
+                  @update:model-value="shangePrep"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-flask-outline"
+                ></v-select>
+              </v-col>
+              <v-col cols="12" md="6" v-if="stations.length > 1">
+                <v-select
+                  v-model="newPreparation.station_id"
+                  label="المحطة"
+                  :items="stations"
+                  item-title="name"
+                  item-value="id"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-map-marker-outline"
+                ></v-select>
+              </v-col>
+
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPreparation.actual_time"
+                  label="وقت التحضير"
+                  type="datetime-local"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-clock-outline"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPreparation.ppm"
+                  label="PPM"
+                  type="number"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-gauge"
+                  @update:model-value="quantityFin"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPreparation.cont_hours"
+                  label="عدد الساعات"
+                  type="number"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-timer-outline"
+                  @update:model-value="quantityFin"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" md="6">
+                <v-text-field
+                  v-model="newPreparation.slices_ton"
+                  label="طن الشرائح"
+                  type="number"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-weight-kilogram"
+                  @update:model-value="quantityFin"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="d-flex gap-4 mb-4 pa-4 rounded-lg bg-surface-variant bg-opacity-5 border border-dashed text-center">
+                  <div class="flex-1">
+                    <div class="text-caption text-muted mb-1">الكمية (كيلو)</div>
+                    <div class="text-h5 font-weight-black color-primary">{{ newPreparation.quantity || 0 }}</div>
+                  </div>
+                  <v-divider vertical></v-divider>
+                  <div class="flex-1">
+                    <div class="text-caption text-muted mb-1">الكمية (سم)</div>
+                    <div class="text-h5 font-weight-black color-secondary">{{ newPreparation.quantityGallon || 0 }}</div>
+                  </div>
                 </div>
-                <div>
-                  <h3>{{ newPreparation.quantity }}</h3>
-                </div>
-              </div>
-              <!-- <v-text-field
-                                type="number"
-                                variant="outlined"
-                                label=" كيلو "
-                                v-model="newPreparation.quantity"
-                            >
-                            </v-text-field> -->
-            </v-col>
-            <v-col style="padding: 0px" class="castm_col" cols="6">
-              <div class="label_quantity">
-                <div>
-                  <h3>سم</h3>
-                </div>
-                <div>
-                  <h3>{{ newPreparation.quantityGallon }}</h3>
-                </div>
-              </div>
-              <!-- <v-text-field
-                                type="number"
-                                variant="outlined"
-                                label=" سم "
-                                v-model="newPreparation.quantityGallon"
-                            >
-                            </v-text-field> -->
-            </v-col>
-            <v-col class="castm_col" cols="12">
-              <v-text-field
-                type="text"
-                variant="outlined"
-                label=" ملاحظة "
-                v-model="newPreparation.note"
-              >
-              </v-text-field>
-            </v-col>
-            <v-col style="padding: 0px" class="castm_col" cols="12">
-              <p style="padding: 0; margin: 0">الوردية</p>
-              <v-radio-group inline v-model="timeOfDay">
-                <v-radio label=" الاولي " value="الاولي"></v-radio>
-                <v-radio label=" التانية " value="الثانية"></v-radio>
-              </v-radio-group>
-            </v-col>
-            <div class="mx-auto">
-              <v-btn class="mx-3" color="green" text @click="addPreparation()">{{
-                $t('yes')
-              }}</v-btn>
-              <v-btn class="mx-3" color="red" text @click="dialogAddPreparation = false">{{
-                $t('no')
-              }}</v-btn>
-            </div>
-          </v-row>
-        </v-container>
+              </v-col>
+
+              <v-col cols="12">
+                <v-text-field
+                  v-model="newPreparation.note"
+                  label="ملاحظات إضافية"
+                  variant="outlined"
+                  class="mb-2"
+                  prepend-inner-icon="mdi-note-text-outline"
+                ></v-text-field>
+              </v-col>
+
+              <v-col cols="12">
+                <div class="text-subtitle-2 mb-2">الوردية</div>
+                <v-radio-group v-model="timeOfDay" inline hide-details class="mt-0">
+                  <v-radio label="الوردية الأولى" value="الاولي" color="primary"></v-radio>
+                  <v-radio label="الوردية الثانية" value="الثانية" color="primary"></v-radio>
+                </v-radio-group>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+
+        <div class="pa-6 border-t d-flex justify-end gap-2 bg-surface-variant bg-opacity-5">
+          <v-btn color="secondary" variant="text" @click="dialogAddPreparation = false" class="rounded-lg px-6">إلغاء</v-btn>
+          <v-btn color="success" @click="addPreparation" class="rounded-lg px-8 font-weight-bold">حفظ التحضيرة</v-btn>
+        </div>
       </v-card>
     </v-dialog>
-    <v-dialog v-model="dialogError">
-      <v-card>
-        <v-card-title v-if="messageError.pp"> حقل ال ppm مطلوب </v-card-title>
-        <v-card-title v-if="messageError.actual_time"> وقت التحضير مطلوب </v-card-title>
-        <v-card-title v-if="messageError.slices_ton"> طن الشرائح مطلوب </v-card-title>
+
+    <v-dialog v-model="dialogError" max-width="400">
+      <v-card class="pa-6 rounded-xl border elevation-4 text-center">
+        <v-icon color="error" size="64" class="mb-4">mdi-alert-circle-outline</v-icon>
+        <v-card-title class="justify-center font-weight-bold">خطأ في البيانات</v-card-title>
+        <v-card-text>
+          <div v-if="messageError.pp" class="mb-2">حقل PPM مطلوب</div>
+          <div v-if="messageError.actual_time" class="mb-2">وقت التحضير مطلوب</div>
+          <div v-if="messageError.slices_ton" class="mb-2">طن الشرائح مطلوب</div>
+        </v-card-text>
+        <v-btn color="primary" class="rounded-lg mt-4" @click="dialogError = false">فهمت</v-btn>
       </v-card>
     </v-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watchEffect, defineProps } from 'vue';
+import { onMounted, ref, watchEffect } from 'vue';
 import { usemainStore } from '../../store/mainStore';
 import axios from 'axios';
-import moment from 'moment';
-// const now = moment();
-//  return  moment("2024-05-15T08:12:39.000000Z").diff(now, 'hour');
+
 const store = usemainStore();
 const newPreparation = ref({});
 const dialogAddPreparation = ref(false);
 const dialogError = ref(false);
 const messageError = ref('');
-const stations = ref('');
-const typePreparation = ref('');
+const stations = ref([]);
+const typePreparation = ref(null);
 const timeOfDay = ref('');
-const quantityFin = ref('');
 
 watchEffect(() => {
   if (
@@ -179,17 +185,17 @@ onMounted(() => {
     .get(`Stations?current_user=${store.user.id}`)
     .then(res => {
       stations.value = res.data;
-      newPreparation.value.station_id = stations.value[0].id;
+      if (stations.value.length > 0) {
+        newPreparation.value.station_id = stations.value[0].id;
+      }
     })
     .catch(() => {
-      store.startSnack('error', 'no', 'danger');
+      store.startSnack('حدث خطأ في تحميل المحطات', 'no', 'danger');
     });
   store.getTypePre('latestPreparationActual.user');
-  // إنشاء كائن Date للحصول على الوقت الحالي
+  
   const currentTime = new Date();
-  // الحصول على ساعة اليوم من الوقت الحالي (بتنسيق 24 ساعة)
   const currentHour = currentTime.getHours();
-  // تحديد ما إذا كان الوقت صباحًا أم مساءً
   if (currentHour >= 8 && currentHour < 20) {
     timeOfDay.value = 'الاولي';
   } else {
@@ -200,56 +206,41 @@ onMounted(() => {
 function shangePrep(x) {
   typePreparation.value = x;
   if (x.latest_preparation_actual != null) {
-    newPreparation.value = x.latest_preparation_actual;
+    newPreparation.value = { ...x.latest_preparation_actual };
   }
 }
+
 function addPreparation() {
   newPreparation.value.user_id = store.user.id;
-  newPreparation.value.typePreparation_id = typePreparation.value.id;
+  newPreparation.value.typePreparation_id = typePreparation.value?.id;
   newPreparation.value.shift = timeOfDay.value;
 
   axios
     .post(`Pre`, newPreparation.value)
     .then(() => {
       dialogAddPreparation.value = false;
-      //  getTypePreFun();
-      newPreparation.value = '';
-      typePreparation.value = '';
-      store.startSnack('success', 'no', 'success');
+      newPreparation.value = {};
+      typePreparation.value = null;
+      store.startSnack('تم إضافة التحضيرة بنجاح', 'no', 'success');
       location.reload();
     })
     .catch(e => {
-      console.log(e);
-      if (e.response.data) {
+      if (e.response?.data) {
         messageError.value = e.response.data;
         dialogError.value = true;
       }
-      store.startSnack('error', 'no', 'danger');
+      store.startSnack('حدث خطأ أثناء الإضافة', 'no', 'danger');
     });
+}
+function quantityFin() {
+    // This is handled by watchEffect
 }
 </script>
 
-<style lang="scss">
-.v_row {
-  * {
-    padding: 0 !important;
-  }
-  .castm_col {
-    padding: 0 !important;
-  }
-}
-
-.label_quantity {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-evenly;
-  align-items: center;
-  h3 {
-    width: 100%;
-    text-align: center;
-    display: inline-block;
-    font-weight: bold;
-    font-size: 23px;
-  }
-}
+<style scoped>
+.color-primary { color: var(--primary) !important; }
+.color-secondary { color: var(--secondary) !important; }
+.text-muted { color: var(--text-muted) !important; }
+.gap-4 { gap: 16px; }
+.flex-1 { flex: 1; }
 </style>

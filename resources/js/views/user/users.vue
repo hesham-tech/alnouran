@@ -1,245 +1,257 @@
 <template>
- <div>
-  <AddUserComponent />
- </div>
- <div style="white-space: nowrap; overflow: auto; width: 100%">
-  <div v-if="store.users.length == ''" class="text-center m-5">
-   {{ $t('noData') }}
-  </div>
-  <table v-else class="table table-striped text-end">
-   <thead>
-    <tr>
-     <th>#</th>
-     <th>الاسم</th>
-     <th>الايميل</th>
-     <th>رقم الهاتف</th>
-     <th>الوظيفة</th>
-     <th>الصلاحيات</th>
-     <th>تاريخ الانشاء</th>
-     <th>اجراءات</th>
-    </tr>
-   </thead>
-   <tbody>
-    <tr
-     class="box-user"
-     v-for="(user, index) in store.users"
-     @click="ActiveClass(user)"
-     @contextmenu="optionsMenu(user)"
-     :id="'id-' + user.id"
-     :key="user.id"
-     @dblclick="goToUser(user.id)"
-    >
-     <td>{{ index + 1 }}</td>
-     <td>{{ user.name }}</td>
-     <td>{{ user.email }}</td>
-     <td>{{ user.phone }}</td>
-     <td>{{ user.Job_title }}</td>
-     <td>{{ user.roles }}</td>
-     <td>{{ store.formatDate(user.created_at) }}</td>
-     <td>
-      <i
-       @click="optionsMenuDots($event, user)"
-       id="dots-active"
-       class="mdi mdi-dots-vertical dots-active"
-      ></i>
-     </td>
-    </tr>
-   </tbody>
-  </table>
-  <div id="optionsMenu" class="d-f-c">
-   <v-list>
-    <v-list-item @click="dialog3 = true" prepend-icon="mdi-square-edit-outline">تعديل</v-list-item>
-    <v-list-item @click="dialog = !dialog" prepend-icon="mdi-delete">حذف</v-list-item>
-    <v-list-item @click="dialog = !dialog" prepend-icon="mdi-shwo">حذف</v-list-item>
-   </v-list>
-  </div>
+  <div class="pa-4 dashboard-container">
+    <div class="d-flex justify-space-between align-center mb-6">
+      <div class="d-flex align-center">
+        <v-icon color="primary" size="32" class="mr-2">mdi-account-group-outline</v-icon>
+        <h1 class="text-h5 font-weight-bold">إدارة المستخدمين</h1>
+      </div>
+      <AddUserComponent />
+    </div>
 
-  <v-dialog v-model="dialog" width="auto">
-   <v-card>
-    <v-card-title> تاكيد حذف </v-card-title>
-    <v-card-text> هل تريد حذف {{ userDescription }} </v-card-text>
-    <v-card-actions>
-     <v-btn color="primary" variant="text" @click="dialog = false"> لا </v-btn>
-     <v-btn color="primary" variant="text" @click="funDelete()"> نعم </v-btn>
-    </v-card-actions>
-   </v-card>
-  </v-dialog>
+    <!-- Users Table -->
+    <v-card class="border rounded-xl overflow-hidden elevation-1">
+      <v-table hover density="comfortable" class="modern-table">
+        <thead>
+          <tr>
+            <th class="text-right">#</th>
+            <th class="text-right">الموظف</th>
+            <th class="text-right">الاتصال</th>
+            <th class="text-right">الوظيفة / القسم</th>
+            <th class="text-right">الصلاحيات</th>
+            <th class="text-right">تاريخ الانضمام</th>
+            <th class="text-center">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(user, index) in store.users"
+            :key="user.id"
+            @dblclick="goToUser(user.id)"
+            class="cursor-pointer"
+          >
+            <td>{{ index + 1 }}</td>
+            <td>
+              <div class="d-flex align-center py-2">
+                <v-avatar color="primary" size="32" class="mr-3 text-white font-weight-bold">
+                  {{ user.name ? user.name.charAt(0) : '?' }}
+                </v-avatar>
+                <div>
+                  <div class="font-weight-bold">{{ user.name }}</div>
+                  <div class="text-caption text-muted">{{ user.roles }}</div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <div class="text-body-2">{{ user.email }}</div>
+              <div class="text-caption text-muted">{{ user.phone }}</div>
+            </td>
+            <td>
+              <v-chip size="x-small" variant="tonal" color="secondary" class="font-weight-bold">
+                {{ user.Job_title }}
+              </v-chip>
+            </td>
+            <td>
+              <v-chip
+                size="x-small"
+                :color="user.roles === 'admin' ? 'error' : 'info'"
+                variant="flat"
+              >
+                {{ user.roles }}
+              </v-chip>
+            </td>
+            <td class="text-caption">
+              {{ store.formatDate(user.created_at) }}
+            </td>
+            <td class="text-center">
+              <v-menu location="bottom end">
+                <template v-slot:activator="{ props }">
+                  <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props"></v-btn>
+                </template>
+                <v-list density="compact" class="rounded-lg elevation-4">
+                  <v-list-item
+                    prepend-icon="mdi-account-outline"
+                    title="عرض الملف"
+                    @click="goToUser(user.id)"
+                  ></v-list-item>
+                  <v-list-item
+                    prepend-icon="mdi-pencil-outline"
+                    title="تعديل البيانات"
+                    @click="openEditDialog(user)"
+                  ></v-list-item>
+                  <v-divider class="my-1"></v-divider>
+                  <v-list-item
+                    prepend-icon="mdi-delete-outline"
+                    title="حذف المستخدم"
+                    color="error"
+                    @click="confirmDelete(user)"
+                  ></v-list-item>
+                </v-list>
+              </v-menu>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
 
-  <v-dialog v-model="dialog2" width="auto">
-   <v-card>
-    <v-card-title> تنبية </v-card-title>
-    <v-card-text>
-     خاصية التعديل غير متاحه الان <br />
-     بامكانك حذف الاجازة واضافة اجازة اخري
-    </v-card-text>
-    <v-card-actions>
-     <v-btn color="primary" variant="text" @click="dialog2 = false"> اغلاق </v-btn>
-    </v-card-actions>
-   </v-card>
-  </v-dialog>
-  <v-dialog v-model="dialog3" width="auto">
-   <v-card>
-    <v-card-title> تعديل {{ userActive.name }} </v-card-title>
-    <v-card-text>
-     <v-form lazy-validation>
-      <v-text-field
-       variant="outlined"
-       :label="$t('enterName')"
-       v-model="userActive.name"
-       :rules="[v => !!v || 'This field is required']"
-      ></v-text-field>
-      <v-text-field
-       variant="outlined"
-       :label="$t('enterEmail')"
-       :rules="[v => !!v || 'This field is required']"
-       v-model="userActive.email"
-      ></v-text-field>
-      <v-text-field
-       variant="outlined"
-       type="number"
-       :label="$t('enterTelephone')"
-       :rules="[v => !!v || 'This field is required']"
-       v-model="userActive.phone"
-      ></v-text-field>
-      <v-btn class="my-3 btn-password" @click="editPass = !editPass">{{
-       !editPass ? $t('changePassword') : $t('noChangePassword')
-      }}</v-btn>
-      <v-text-field
-       v-if="editPass"
-       :type="store.passToggle == true ? 'password' : 'text'"
-       :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
-       @click:appendInner="store.passToggle = !store.passToggle"
-       variant="outlined"
-       autocomplete="ON"
-       v-model="userActive.password"
-       :label="$t('enterPassword')"
-       :rules="[v => !!v || 'This field is required']"
-      ></v-text-field>
-     </v-form>
-     <v-btn color="secondary" class="my-3" @click="editProfil">{{ $t('save') }}</v-btn>
-    </v-card-text>
-    <v-card-actions>
-     <v-btn color="primary" variant="text" @click="dialog3 = false"> اغلاق </v-btn>
-    </v-card-actions>
-   </v-card>
-  </v-dialog>
- </div>
+      <div v-if="store.users.length === 0" class="pa-12 text-center">
+        <v-icon size="64" color="secondary" class="mb-4">mdi-account-off-outline</v-icon>
+        <div class="text-h6 text-muted">لا يوجد مستخدمين مسجلين حالياً</div>
+      </div>
+    </v-card>
+
+    <!-- Delete Confirmation Dialog -->
+    <v-dialog v-model="dialogDelete" max-width="400">
+      <v-card class="pa-4 text-center">
+        <v-icon color="error" size="48" class="mb-2">mdi-delete-alert-outline</v-icon>
+        <v-card-title>حذف المستخدم؟</v-card-title>
+        <v-card-text>أنت على وشك حذف <strong>{{ userActive?.name }}</strong>. لا يمكن التراجع عن هذا الإجراء.</v-card-text>
+        <div class="d-flex justify-center gap-2 mt-4">
+          <v-btn color="secondary" variant="text" @click="dialogDelete = false">إلغاء</v-btn>
+          <v-btn color="error" class="rounded-lg" @click="funDelete">تأكيد الحذف</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+
+    <!-- Edit User Dialog -->
+    <v-dialog v-model="dialogEdit" max-width="500">
+      <v-card class="rounded-xl border overflow-hidden bg-surface">
+        <div class="pa-6 border-b bg-surface-variant bg-opacity-5 d-flex align-center">
+          <v-icon color="primary" class="mr-3">mdi-account-edit-outline</v-icon>
+          <span class="text-h6 font-weight-bold">تعديل بيانات المستخدم</span>
+          <v-spacer></v-spacer>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="dialogEdit = false"></v-btn>
+        </div>
+
+        <v-card-text class="pa-6">
+          <v-form @submit.prevent="editProfil">
+            <v-text-field v-model="userActive.name" label="الاسم الكامل" variant="outlined" prepend-inner-icon="mdi-account" class="mb-4"></v-text-field>
+            <v-text-field v-model="userActive.email" label="البريد الإلكتروني" variant="outlined" prepend-inner-icon="mdi-email-outline" class="mb-4"></v-text-field>
+            <v-text-field v-model="userActive.phone" label="رقم الهاتف" variant="outlined" prepend-inner-icon="mdi-phone-outline" class="mb-4"></v-text-field>
+            
+            <div class="pa-3 rounded-lg border bg-surface-variant bg-opacity-5 mb-4">
+              <v-checkbox
+                v-model="changePass"
+                label="تغيير كلمة المرور"
+                density="compact"
+                color="primary"
+                hide-details
+              ></v-checkbox>
+
+              <v-expand-transition>
+                <div v-if="changePass" class="mt-4">
+                  <v-text-field
+                    v-model="userActive.password"
+                    :type="store.passToggle ? 'password' : 'text'"
+                    label="كلمة المرور الجديدة"
+                    variant="outlined"
+                    prepend-inner-icon="mdi-lock-outline"
+                    :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                    @click:appendInner="store.passToggle = !store.passToggle"
+                    hide-details
+                  ></v-text-field>
+                </div>
+              </v-expand-transition>
+            </div>
+          </v-form>
+        </v-card-text>
+
+        <div class="pa-6 border-t d-flex justify-end gap-2 bg-surface-variant bg-opacity-5">
+          <v-btn color="secondary" variant="text" @click="dialogEdit = false" class="rounded-lg px-6">إلغاء</v-btn>
+          <v-btn color="primary" @click="editProfil" class="rounded-lg px-8 font-weight-bold">حفظ التعديلات</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
+
 <script setup>
 import AddUserComponent from '../../components/user/AddUserComponent.vue';
 import { usemainStore } from '../../store/mainStore';
 import { onMounted, ref } from 'vue';
 import axios from 'axios';
-import { useRouter, useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
+
 const router = useRouter();
-const route = useRoute();
 const store = usemainStore();
-const userActive = ref(null);
-const editPass = ref(false);
-const userId = ref(0);
-const dialog = ref(false);
-const dialog2 = ref(false);
-const dialog3 = ref(false);
+const userActive = ref({});
+const dialogDelete = ref(false);
+const dialogEdit = ref(false);
+const changePass = ref(false);
+
 onMounted(() => {
- store.getUsers();
+  store.getUsers();
 });
+
 function goToUser(id) {
-  router.push({ path: `/user/${id}` });
-}
-function optionsMenuDots(event, user) {
- userActive.value = user;
- const optionsMenuEl = document.getElementById('optionsMenu');
- const styleEl = {
-  display: 'block',
-  top: `${event.pageY + 10}px`,
-  left: `${event.pageX >= 150 ? event.pageX - 100 : event.pageX + 30}px`,
- };
- userId.value = user.id;
- Object.assign(optionsMenuEl.style, styleEl);
-
- // تعريف الدالة المراقبة
- function funAddEvent(event) {
-  var optionsMenu = document.getElementById('optionsMenu');
-  var dotsActive = document.getElementById('dots-active');
-  var target = event.target;
-
-  if (target.id != dotsActive.id && optionsMenu.style.display == 'block') {
-   optionsMenu.style.display = 'none';
-   // document.removeEventListener('click', funAddEvent);
-  }
- }
- // إضافة المراقبة
- if (optionsMenuEl.style.display == 'block') {
-  document.addEventListener('click', funAddEvent);
- }
+  router.push(`/user/${id}`);
 }
 
-function optionsMenu(user) {
- event.preventDefault();
- userActive.value = user;
- const optionsMenuEl = ref(document.getElementById('optionsMenu'));
- const styleEl = ref({
-  display: 'block',
-  top: `${event.pageY + 10}px`,
-  left: `${event.pageX >= 150 ? event.pageX - 100 : event.pageX + 30}px`,
- });
- userId.value = user.id;
- Object.assign(optionsMenuEl.value.style, styleEl.value);
-
- // تعريف الدالة المراقبة
- function funAddEvent(event) {
-  var optionsMenu = document.getElementById('optionsMenu');
-  var target = event.target;
-
-  if (!optionsMenu.contains(target) && optionsMenu.style.display === 'block') {
-   optionsMenu.style.display = 'none';
-   // document.removeEventListener('click', funAddEvent);
-  }
- }
- // إضافة المراقبة
- if (optionsMenuEl.value.style.display == 'block') {
-  document.addEventListener('click', funAddEvent);
- }
-
- ActiveClass(user);
+function openEditDialog(user) {
+  userActive.value = { ...user };
+  changePass.value = false;
+  dialogEdit.value = true;
 }
-function ActiveClass(user) {
- userActive.value = user;
- userId.value = user.id;
 
- // إضافة كلاس active إلى العنصر الهدف
- document.getElementById(`id-${user.id}`).classList.add('active');
- // إزالة كلاس active من باقي العناصر
- Array.from(document.querySelectorAll(`.box-user`)).forEach(element => {
-  if (element !== document.getElementById(`id-${user.id}`)) {
-   element.classList.remove('active');
-  }
- });
+function confirmDelete(user) {
+  userActive.value = user;
+  dialogDelete.value = true;
 }
+
 function funDelete() {
- axios
-  .delete(`users/${userId.value}`)
-  .then(() => {
-   store.getUsers();
-   dialog.value = false;
-   store.startSnack('success', 'no', 'success');
-  })
-  .catch(() => {
-   store.startSnack('error', 'no', 'danger');
-  });
- document.getElementById('optionsMenu').style.display = 'none';
+  axios
+    .delete(`users/${userActive.value.id}`)
+    .then(() => {
+      store.getUsers();
+      dialogDelete.value = false;
+      store.startSnack('تم حذف المستخدم بنجاح', 'no', 'success');
+    })
+    .catch(() => {
+      store.startSnack('فشل الحذف، يرجى المحاولة لاحقاً', 'no', 'danger');
+    });
 }
 
 function editProfil() {
- axios
-  .put(`users/${userActive.value.id}`, userActive.value)
-  .then(() => {
-   store.startSnack('success', 'no', 'success');
-   dialog3.value = false;
-  })
-  .catch(() => {
-   store.startSnack('error', 'no', 'danger');
-  });
+  const payload = { ...userActive.value };
+  if (!changePass.value) delete payload.password;
+
+  axios
+    .put(`users/${userActive.value.id}`, payload)
+    .then(() => {
+      store.getUsers();
+      dialogEdit.value = false;
+      store.startSnack('تم تحديث البيانات بنجاح', 'no', 'success');
+    })
+    .catch(() => {
+      store.startSnack('حدث خطأ أثناء التحديث', 'no', 'danger');
+    });
 }
 </script>
-<style lang="scss"></style>
+
+<style scoped>
+.modern-table {
+  background: var(--bg-surface) !important;
+}
+
+.modern-table thead th {
+  background: var(--bg-main) !important;
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.modern-table tbody td {
+  border-bottom: 1px solid var(--border-color) !important;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.gap-2 {
+  gap: 8px;
+}
+</style>

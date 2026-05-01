@@ -40,8 +40,13 @@ window.onlanguagechange = () => {
   language = navigator.language.slice(0, 2);
   localStorage.setItem('lang', navigator.language.slice(0, 2));
 };
-moment.locale(`${localStorage.lang}-dz`);
-import 'moment/dist/locale/ar-dz';
+moment.locale('ar');
+import 'moment/dist/locale/ar';
+moment.updateLocale('ar', {
+  postformat: function (string) {
+    return string;
+  },
+});
 // import overlayComponent from './components/overlayComponent.vue';
 import moment from 'moment';
 import axios from 'axios';
@@ -68,25 +73,23 @@ window.addEventListener('offline', function () {
 
 // console.log(window.location.origin, '&&', BASE_URL);
 axios.defaults.baseURL = BASE_URL;
-axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.token}`;
+axios.defaults.headers.common['Accept'] = 'application/json';
+
+// Cleanup invalid localStorage values
+if (localStorage.token === 'undefined') localStorage.removeItem('token');
+if (localStorage.user === 'undefined') localStorage.removeItem('user');
+
 onMounted(() => {
   axios.defaults.baseURL = BASE_URL;
   axios.defaults.withCredentials = true;
-  store.setAuthHeaderNew(localStorage.token);
-  // router.push({ path: "vacations" });
-  store.getUser();
-});
-function eventOffset() {
-  store.getUser();
-  store.getReports();
-}
-window.addEventListener('beforeunload', function (event) {
-  if (event.pageYOffset === 0) {
-    event.preventDefault();
-    event.returnValue = '';
-    eventOffset();
+  
+  const token = localStorage.getItem('token');
+  if (token && token !== 'undefined') {
+    store.setAuthHeaderNew(token);
+    store.getUser();
   }
 });
+// The beforeunload listener making redundant API calls was removed to prevent rate limiting issues.
 function authCheck2() {
   axios
     .get('check2')
@@ -104,8 +107,7 @@ html {
 }
 
 body * {
-  font-family: 'Noto Kufi Arabic', sans-serif !important;
-  font-optical-sizing: auto;
+  font-family: 'Cairo', sans-serif !important;
 }
 
 .clickd {

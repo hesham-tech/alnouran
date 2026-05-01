@@ -1,101 +1,156 @@
 <template>
-    <div class="register">
-        <h1 class="h1 my-5 text-center">{{ $t("editProfil") }}</h1>
-        <v-form lazy-validation>
-            <v-text-field variant="outlined" :label="$t('enterName')" v-model="user.name"
-                :rules="[(v) => !!v || 'This field is required']"></v-text-field>
-            <v-text-field variant="outlined" :label="$t('enterEmail')" :rules="[(v) => !!v || 'This field is required']"
-                v-model="user.email"></v-text-field>
-            <v-text-field variant="outlined" type="number" :label="$t('enterTelephone')"
-                :rules="[(v) => !!v || 'This field is required']" v-model="user.phone"></v-text-field>
-            <v-btn class="my-3 btn-password"
-                @click="editPass = !editPass">{{ !editPass ? $t("changePassword") : $t("noChangePassword") }}</v-btn>
-            <v-text-field v-if="editPass" :type="store.passToggle == true ? 'password' : 'text'" :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
-                " @click:appendInner="store.passToggle = !store.passToggle" variant="outlined" autocomplete="ON"
-                v-model="user.password" :label="$t('enterPassword')"
-                :rules="[(v) => !!v || 'This field is required']"></v-text-field>
-        </v-form>
-        <v-btn color="secondary" class="my-3" @click="editProfil">{{ $t("save") }}</v-btn>
-    </div>
-    <v-btn color="red" class="my-3" @click="dialog = !dialog" prepend-icon="mdi-delete"> حذف الحساب نهائيا </v-btn>
-    <v-dialog v-model="dialog" width="auto">
-        <v-card>
-            <v-card-text>
-                هل تريد حذف الحساب بالفعل
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" variant="text" @click="dialog = false">
-                    لا
-                </v-btn>
-                <v-btn color="primary" variant="text" @click="dialog2 = !dialog2">
-                    نعم
-                </v-btn>
-            </v-card-actions>
-        </v-card>
+  <div class="pa-4 d-flex justify-center align-center min-vh-80">
+    <v-card class="pa-8 border rounded-xl bg-surface elevation-4 w-100 max-w-600">
+      <div class="text-center mb-8">
+        <v-icon color="primary" size="48" class="mb-4">mdi-account-edit-outline</v-icon>
+        <h1 class="text-h4 font-weight-bold">تعديل الملف الشخصي</h1>
+        <p class="text-muted">قم بتحديث معلوماتك الشخصية أو كلمة المرور</p>
+      </div>
+
+      <v-form @submit.prevent="editProfil">
+        <v-text-field
+          v-model="user.name"
+          label="الاسم الكامل"
+          variant="outlined"
+          class="mb-4"
+          prepend-inner-icon="mdi-account-outline"
+        ></v-text-field>
+
+        <v-text-field
+          v-model="user.email"
+          label="البريد الإلكتروني"
+          variant="outlined"
+          class="mb-4"
+          prepend-inner-icon="mdi-email-outline"
+        ></v-text-field>
+
+        <v-text-field
+          v-model="user.phone"
+          label="رقم الهاتف"
+          variant="outlined"
+          class="mb-6"
+          prepend-inner-icon="mdi-phone-outline"
+        ></v-text-field>
+
+        <v-divider class="mb-6"></v-divider>
+
+        <div class="d-flex align-center justify-space-between mb-4">
+          <span class="font-weight-bold">تغيير كلمة المرور</span>
+          <v-switch
+            v-model="editPass"
+            color="primary"
+            hide-details
+            density="compact"
+          ></v-switch>
+        </div>
+
+        <v-expand-transition>
+          <div v-if="editPass">
+            <v-text-field
+              v-model="user.password"
+              :type="store.passToggle ? 'password' : 'text'"
+              label="كلمة المرور الجديدة"
+              variant="outlined"
+              class="mb-4"
+              prepend-inner-icon="mdi-lock-outline"
+              :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+              @click:appendInner="store.passToggle = !store.passToggle"
+            ></v-text-field>
+          </div>
+        </v-expand-transition>
+
+        <v-btn
+          type="submit"
+          color="primary"
+          block
+          size="large"
+          class="rounded-lg font-weight-bold mb-4"
+        >
+          حفظ التغييرات
+        </v-btn>
+
+        <v-btn
+          variant="text"
+          color="error"
+          block
+          class="text-none"
+          @click="dialog = true"
+        >
+          حذف الحساب نهائياً
+        </v-btn>
+      </v-form>
+    </v-card>
+
+    <!-- Delete Confirmation -->
+    <v-dialog v-model="dialog" max-width="400">
+      <v-card class="pa-4 text-center">
+        <v-icon color="error" size="48" class="mb-2">mdi-alert-circle-outline</v-icon>
+        <v-card-title>حذف الحساب؟</v-card-title>
+        <v-card-text>هل أنت متأكد من رغبتك في حذف حسابك؟ سيتم فقدان جميع بياناتك نهائياً.</v-card-text>
+        <div class="d-flex justify-center gap-2 mt-4">
+          <v-btn color="secondary" variant="text" @click="dialog = false">إلغاء</v-btn>
+          <v-btn color="error" class="rounded-lg" @click="funDelete">تأكيد الحذف</v-btn>
+        </div>
+      </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog2" width="auto">
-        <v-card>
-            <v-card-title>
-                تاكيد حذف
-            </v-card-title>
-            <v-card-text color="red">
-                <div class="alert alert-danger text-center text-h6"> سيتم حذف جميع البيانات المسجلة نهائيا ولا
-                    تستطيع
-                    استرجاعها </div>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" variant="text" @click="dialog2 = false">
-                    لا
-                </v-btn>
-                <v-btn color="primary" variant="text" @click="funDelete()">
-                    نعم
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+  </div>
 </template>
 
 <script setup>
 import { usemainStore } from "@/store/mainStore";
-const store = usemainStore();
 import axios from "axios";
 import { ref } from "vue";
+
+const store = usemainStore();
 const dialog = ref(false);
-const dialog2 = ref(false);
-const user = ref(store.user);
+const user = ref({ ...store.user });
 const editPass = ref(false);
+
 function editProfil() {
-    axios
-        .put(`users/${store.user.id}`, user.value)
-        .then(() => {
-            store.startSnack("success", "no", "success");
-            if (user.value.password) {
-                store.logout();
-            }
-        })
-        .catch(() => {
-            store.startSnack("error", "no", "danger");
-        });
-}
-function funDelete() {
-    axios.delete(`users/${store.user.id}`).then(() => {
-        dialog.value = false;
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        store.setAuthHeaderNew();
-        store.startSnack("success", "login", "success", false, 200);
-        store.auth = false;
-    }).catch(() => {
-        store.startSnack("error", "no", "danger");
+  const payload = { ...user.value };
+  if (!editPass.value) delete payload.password;
+
+  axios
+    .put(`users/${store.user.id}`, payload)
+    .then(() => {
+      store.startSnack("تم تحديث الملف الشخصي بنجاح", "no", "success");
+      if (editPass.value) {
+        store.logout();
+      }
     })
+    .catch(() => {
+      store.startSnack("حدث خطأ أثناء التحديث", "no", "danger");
+    });
+}
+
+function funDelete() {
+  axios
+    .delete(`users/${store.user.id}`)
+    .then(() => {
+      dialog.value = false;
+      store.logout();
+      store.startSnack("تم حذف الحساب نهائياً", "login", "success");
+    })
+    .catch(() => {
+      store.startSnack("حدث خطأ أثناء حذف الحساب", "no", "danger");
+    });
 }
 </script>
+
 <style scoped>
-.btn-password {
-    color: white !important;
-    background-color: #ff5722 !important;
-    /* position: sticky !important;
-    right: 20%;
-    bottom: 50%; */
+.min-vh-80 {
+  min-height: 80vh;
+}
+
+.max-w-600 {
+  max-width: 600px;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
+}
+
+.gap-2 {
+  gap: 8px;
 }
 </style>

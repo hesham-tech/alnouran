@@ -1,72 +1,175 @@
 <template>
-    <div class="register">
-        <h1 class="h1 my-4 text-center">{{ $t("register") }}</h1>
-        <div class="alert alert-info" v-if="stations == 'getData'">
-            {{ $t("getData") }}
-        </div>
-        <div class="alert alert-danger" v-else-if="stations == 'noData'">
-            {{ $t("noData") }}
-        </div>
-        <v-form v-else lazy-validation>
-            <v-text-field type="text" variant="outlined" :label="$t('enterName')" v-model="user.name"
-                :rules="[(v) => !!v || 'This field is required']"></v-text-field>
-            <v-text-field type="email" variant="outlined" :label="$t('enterEmail')"
-                :rules="[(v) => !!v || 'This field is required']" v-model="user.email"></v-text-field>
-            <v-text-field type="number" variant="outlined" :label="$t('enterTelephone')"
-                :rules="[(v) => !!v || 'This field is required']" v-model="user.phone"></v-text-field>
-            <v-text-field :type="store.passToggle == true ? 'password' : 'text'" :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'
-                " @click:appendInner="store.passToggle = !store.passToggle" variant="outlined" autocomplete="ON"
-                v-model="user.password" :label="$t('enterPassword')"
-                :rules="[(v) => !!v || 'This field is required']"></v-text-field>
-            <v-select :label="$t('Selectjob')" variant="outlined" :rules="[(v) => !!v || 'This field is required']"
-                :items="Job_title" item-title="name" item-value="id" v-model="user.Job_title"></v-select>
-            <v-select :label="$t('SelectPartment')" variant="outlined" :rules="[(v) => !!v || 'This field is required']"
-                :items="stations" item-title="name" item-value="id" :multiple="user.Job_title == 'engeneer' ? true : false"
-                v-model="user.station_id"></v-select>
+  <div class="auth-wrapper d-flex align-center justify-center">
+    <v-card width="100%" max-width="550" class="auth-card pa-8 rounded-xl elevation-12">
+      <div class="text-center mb-6">
+        <v-avatar color="primary" size="64" class="mb-4">
+          <v-icon size="32" color="white">mdi-account-plus-outline</v-icon>
+        </v-avatar>
+        <h1 class="text-h4 font-weight-bold mb-2">{{ $t('register') }}</h1>
+        <p class="text-muted text-body-2">انضم إلى Alnouran وابدأ في إدارة محطاتك</p>
+      </div>
 
-            <v-btn color="secondary" class="my-3" @click="toRegister">{{ $t("register") }}</v-btn>
-        </v-form>
-        <div>
-            <span>{{ $t("gotoAccount") }}</span>
-            <router-link to="/auth/login">{{ $t("LogIn") }}</router-link>
-        </div>
-    </div>
+      <div class="d-flex justify-center py-4" v-if="stations == 'getData'">
+        <v-progress-circular indeterminate color="primary"></v-progress-circular>
+      </div>
+
+      <v-alert
+        v-else-if="stations == 'noData'"
+        type="error"
+        variant="tonal"
+        class="mb-4"
+        title="خطأ في تحميل البيانات"
+        text="تعذر الحصول على قائمة المحطات، يرجى المحاولة لاحقاً."
+      ></v-alert>
+
+      <v-form v-else @submit.prevent="toRegister">
+        <v-row dense>
+          <v-col cols="12" sm="6">
+            <v-text-field
+              v-model="user.name"
+              :label="$t('enterName')"
+              prepend-inner-icon="mdi-account-outline"
+              class="mb-2"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-text-field
+              v-model="user.email"
+              :label="$t('enterEmail')"
+              type="email"
+              prepend-inner-icon="mdi-email-outline"
+              class="mb-2"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="user.phone"
+              :label="$t('enterTelephone')"
+              type="tel"
+              prepend-inner-icon="mdi-phone-outline"
+              class="mb-2"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="user.password"
+              :type="store.passToggle ? 'password' : 'text'"
+              :label="$t('enterPassword')"
+              prepend-inner-icon="mdi-lock-outline"
+              :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+              @click:appendInner="store.passToggle = !store.passToggle"
+              class="mb-2"
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-select
+              v-model="user.Job_title"
+              :label="$t('Selectjob')"
+              :items="Job_title"
+              item-title="name"
+              item-value="id"
+              prepend-inner-icon="mdi-briefcase-outline"
+              class="mb-2"
+            ></v-select>
+          </v-col>
+          <v-col cols="12" sm="6">
+            <v-select
+              v-model="user.station_id"
+              :label="$t('SelectPartment')"
+              :items="stations"
+              item-title="name"
+              item-value="id"
+              :multiple="user.Job_title == 'engeneer'"
+              prepend-inner-icon="mdi-domain"
+              class="mb-2"
+            ></v-select>
+          </v-col>
+        </v-row>
+
+        <v-btn
+          block
+          size="large"
+          color="primary"
+          class="text-none font-weight-bold rounded-lg mt-4"
+          height="52"
+          type="submit"
+        >
+          {{ $t('register') }}
+        </v-btn>
+      </v-form>
+
+      <div class="text-center mt-6 pt-4 border-t">
+        <span class="text-muted text-body-2">{{ $t('gotoAccount') }}</span>
+        <v-btn variant="text" color="primary" to="/auth/login" class="text-none px-2 font-weight-bold">
+          {{ $t('LogIn') }}
+        </v-btn>
+      </div>
+    </v-card>
+  </div>
 </template>
+
 <script setup>
 import { usemainStore } from "@/store/mainStore";
-const store = usemainStore();
 import axios from "axios";
 import { onMounted, ref } from "vue";
+
+const store = usemainStore();
 const stations = ref(["getData"]);
-const user = ref({});
-const Job_title = ref([
-    { id: "engeneer", name: "مهندس" },
-    { id: "technician", name: "فني" },
-]);
-onMounted(() => {
-    axios
-        .get(`Stations`)
-        .then((res) => {
-            stations.value = res.data;
-        })
-        .catch(() => {
-            stations.value = "noData";
-            store.startSnack("noData", "no", "danger");
-        });
+const user = ref({
+  name: '',
+  email: '',
+  phone: '',
+  password: '',
+  Job_title: '',
+  station_id: null
 });
+
+const Job_title = ref([
+  { id: "engeneer", name: "مهندس" },
+  { id: "technician", name: "فني" },
+]);
+
+onMounted(() => {
+  axios
+    .get(`Stations`)
+    .then((res) => {
+      stations.value = res.data;
+    })
+    .catch(() => {
+      stations.value = "noData";
+      store.startSnack("فشل تحميل قائمة المحطات", "no", "danger");
+    });
+});
+
 function toRegister() {
-    axios
-        .post(`register`, user.value)
-        .then(() => {
-            store.startSnack("success", "login", "success");
-        })
-        .catch(() => {
-            store.startSnack("error", "no", "danger");
-        });
+  axios
+    .post(`register`, user.value)
+    .then(() => {
+      store.startSnack("تم إنشاء الحساب بنجاح", "login", "success");
+    })
+    .catch(() => {
+      store.startSnack("حدث خطأ أثناء إنشاء الحساب", "no", "danger");
+    });
 }
 </script>
+
 <style scoped>
-.register {
-    margin: 5% auto;
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 20px;
+}
+
+[data-v-theme="dark"] .auth-wrapper {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.auth-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
 }
 </style>

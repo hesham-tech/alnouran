@@ -1,5 +1,11 @@
 import moment from 'moment';
+import 'moment/dist/locale/ar';
 moment.locale('ar');
+moment.updateLocale('ar', {
+  postformat: function (string) {
+    return string;
+  },
+});
 import axios from 'axios';
 import { defineStore } from 'pinia';
 export const usemainStore = defineStore('mainStore', {
@@ -7,7 +13,7 @@ export const usemainStore = defineStore('mainStore', {
     passToggle: true,
     overlay: true,
     auth: false,
-    user: localStorage.user ? JSON.parse(localStorage.user) : false,
+    user: (localStorage.user && localStorage.user !== 'undefined') ? JSON.parse(localStorage.user) : false,
     users: ['getData'],
     reports: 'getData',
     absences: '',
@@ -25,6 +31,7 @@ export const usemainStore = defineStore('mainStore', {
     urlDirec: ' ',
     timeout: 1000,
     colorBTN: '#08BC45',
+    drawer: true,
   }),
   actions: {
     setAuthHeaderNew(token) {
@@ -59,19 +66,20 @@ export const usemainStore = defineStore('mainStore', {
       this.timeout = timeout;
     },
     getUser() {
-      if (this.user.id) {
-        axios
-          .get(`users/${JSON.parse(localStorage.user).id}`)
+      if (this.user && this.user.id) {
+        return axios
+          .get(`users/${this.user.id}`)
           .then(res => {
             this.user = res.data;
           })
           .catch(() => {
-            this.startSnack('error', 'login', 'danger');
+            this.startSnack('حدث خطأ في جلب بيانات المستخدم', 'login', 'danger');
           });
       }
+      return Promise.resolve();
     },
     getReports() {
-      axios
+      return axios
         .get(`user/${this.user.id}/reports`)
         .then(res => {
           if (res.data.length == 0) {
@@ -86,7 +94,7 @@ export const usemainStore = defineStore('mainStore', {
         });
     },
     getUsers() {
-      axios
+      return axios
         .get(`users`)
         .then(res => {
           if (res.data.length == 0) {

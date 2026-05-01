@@ -1,44 +1,64 @@
 <template>
-  <v-app-bar :elevation="2">
-    <template v-slot:append>
-      <v-btn prepend-icon="mdi-home" to="/">الرئيسية</v-btn>
-    </template>
-    <v-switch
-      @change="toggleTheme"
-      v-model="switchd"
-      color="info"
-      label="الوضع المظلم"
-      hide-details
-    ></v-switch>
+  <v-app-bar :elevation="0" class="glass border-b">
+    <v-app-bar-nav-icon
+      class="hidden-md-and-up"
+      @click="store.drawer = !store.drawer"
+    ></v-app-bar-nav-icon>
+    <v-app-bar-title class="font-weight-bold">
+      <span class="text-primary">Alnouran</span>
+    </v-app-bar-title>
+
+    <v-spacer></v-spacer>
+
+    <div class="d-flex align-center px-4">
+      <v-switch
+        @change="toggleTheme"
+        v-model="switchd"
+        color="primary"
+        hide-details
+        density="compact"
+        class="ml-4"
+      >
+        <template v-slot:label>
+          <v-icon :icon="switchd ? 'mdi-weather-night' : 'mdi-weather-sunny'" size="small"></v-icon>
+        </template>
+      </v-switch>
+
+      <v-btn
+        variant="tonal"
+        color="primary"
+        prepend-icon="mdi-home-outline"
+        to="/"
+        class="text-none"
+      >
+        الرئيسية
+      </v-btn>
+    </div>
   </v-app-bar>
 </template>
 <script setup>
-// import { usemainStore } from '@/store/mainStore';
-// const store = usemainStore();
 import { useTheme } from 'vuetify';
-const theme = useTheme();
 import { ref } from 'vue';
-console.log(localStorage.defaultTheme);
-// const defaultThemeLocal = ref(
-//   localStorage.defaultTheme ? JSON.parse(localStorage.defaultTheme) : false
-// );
-// console.log(defaultThemeLocal.value);
-const switchd = ref(JSON.parse(localStorage.defaultTheme));
-console.log(switchd.value);
-function toggleTheme(){
-  if (switchd.value) {
-    theme.global.name.value = 'dark';
-    localStorage.setItem('defaultTheme', true);
-  } else {
-    theme.global.name.value = 'light';
-    localStorage.setItem('defaultTheme', false);
-  }
+import { usemainStore } from '@/store/mainStore';
+
+const theme = useTheme();
+const store = usemainStore();
+const switchd = ref(JSON.parse(localStorage.getItem('defaultTheme')) || false);
+
+function toggleTheme() {
+  const newTheme = switchd.value ? 'dark' : 'light';
+  theme.global.name.value = newTheme;
+  localStorage.setItem('defaultTheme', switchd.value);
+  document.documentElement.setAttribute('data-v-theme', newTheme);
 }
 </script>
-<style>
+<style scoped>
 .v-app-bar {
-  position: fixed !important;
-  top: 0;
-  z-index: 999;
+  border-bottom: 1px solid var(--border-color) !important;
+  background: var(--bg-surface) !important;
+}
+.glass {
+  backdrop-filter: blur(10px);
+  background: rgba(var(--v-theme-surface), 0.8) !important;
 }
 </style>

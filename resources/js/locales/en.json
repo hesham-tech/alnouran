@@ -42,6 +42,8 @@
     "Umrah leave": "إجازة عمرة",
     "Recruitment": "تجنيد",
     "Maternity leave": "إجازة وضع",
-    "Compensatory leave": "إجازة تعويضية",
-    "Other": "أخرى"
+    "Compensatory leave": "Compensatory leave",
+    "Other": "Other",
+    "Email": "Email",
+    "Password": "Password"
 }

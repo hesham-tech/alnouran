@@ -1,88 +1,111 @@
 <template>
-  <div>
-    <div class="login">
-      <img class="img-log" src="../assets/Report.png" />
-      <h1 class="h1 my-3 text-center">{{ $t('LogIn') }}</h1>
-      <v-form class="my-3" lazy-validation>
+  <div class="auth-wrapper d-flex align-center justify-center">
+    <v-card width="100%" max-width="450" class="auth-card pa-8 rounded-xl elevation-12">
+      <div class="text-center mb-8">
+        <v-avatar color="primary" size="80" class="mb-4 elevation-4">
+          <v-icon size="40" color="white">mdi-shield-lock-outline</v-icon>
+        </v-avatar>
+        <h1 class="text-h4 font-weight-bold mb-2">{{ $t('LogIn') }}</h1>
+        <p class="text-muted text-body-2">مرحباً بك مجدداً في Alnouran</p>
+      </div>
+
+      <v-form @submit.prevent="toLogIn" class="mt-4">
         <v-text-field
-          type="email"
-          variant="outlined"
           v-model="userLog.email"
-          label=" الايميل او رقم الهاتف  "
-          :rules="[v => !!v || 'This field is required']"
+          :label="$t('Email')"
+          prepend-inner-icon="mdi-email-outline"
+          type="email"
+          class="mb-4"
         ></v-text-field>
+
         <v-text-field
-          :type="store.passToggle == true ? 'password' : 'text'"
+          v-model="userLog.password"
+          :type="store.passToggle ? 'password' : 'text'"
+          :label="$t('enterPassword')"
+          prepend-inner-icon="mdi-lock-outline"
           :append-inner-icon="store.passToggle ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
           @click:appendInner="store.passToggle = !store.passToggle"
-          variant="outlined"
-          autocomplete="no"
-          v-model="userLog.password"
-          :label="$t('enterPassword')"
-          :rules="[v => !!v || 'This field is required']"
+          class="mb-6"
+        ></v-text-field>
+
+        <v-btn
+          block
+          size="large"
+          color="primary"
+          class="text-none font-weight-bold rounded-lg elevation-2"
+          height="52"
+          type="submit"
         >
-        </v-text-field>
+          {{ $t('LogIn') }}
+        </v-btn>
       </v-form>
-      <v-btn @click="toLogIn" class="mt-2">
-        {{ $t('LogIn') }}
-      </v-btn>
-      <!-- <v-btn @click="authCheck2" class="mt-2"> authCheck2 </v-btn> -->
-    </div>
-    <div>
-      <span>{{ $t('dontAccount') }}</span>
-      <router-link to="/auth/register">{{ $t('register') }}</router-link>
-    </div>
+
+      <div class="text-center mt-8 pt-4 border-t">
+        <span class="text-muted text-body-2">{{ $t('dontAccount') }}</span>
+        <v-btn variant="text" color="primary" to="/auth/register" class="text-none px-2 font-weight-bold">
+          {{ $t('register') }}
+        </v-btn>
+      </div>
+    </v-card>
   </div>
 </template>
+
 <script setup>
 import { usemainStore } from '@/store/mainStore';
-const store = usemainStore();
 import { ref } from 'vue';
 import axios from 'axios';
-const userLog = ref({});
-function authCheck2() {
-  axios
-    .get('check2')
-    .then(res => {
-      console.log(res);
-    })
-    .catch(e => {
-      console.log(e);
-    });
-}
-function toLogIn(e) {
+
+const store = usemainStore();
+const userLog = ref({
+  email: '',
+  password: ''
+});
+
+function toLogIn() {
   axios.get('csrf-cookie').then(() => {
     axios
       .post(`login`, userLog.value)
       .then(res => {
-        localStorage.setItem('token', res.data.token);
-        localStorage.setItem('user', JSON.stringify(res.data.user));
-        store.user = res.data.user;
-        store.setAuthHeaderNew(res.data.token);
-        store.getUser();
-        store.auth = true;
-        store.startSnack('success', 'home', 'success', false, 200);
+        if (res.data.token && res.data.user) {
+          localStorage.setItem('token', res.data.token);
+          localStorage.setItem('user', JSON.stringify(res.data.user));
+          store.user = res.data.user;
+          store.setAuthHeaderNew(res.data.token);
+          store.getUser();
+          store.auth = true;
+          store.startSnack('تم تسجيل الدخول بنجاح', 'home', 'success', false, 200);
+        } else {
+          store.startSnack('فشل تسجيل الدخول: بيانات غير مكتملة', 'no', 'danger');
+        }
       })
       .catch(e => {
-        if (e.response.data.error == 'Error in email or password.') {
-          store.startSnack('emailOrPassword', 'no', 'danger');
+        if (e.response?.data?.error == 'Error in email or password.') {
+          store.startSnack('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'no', 'danger');
         } else {
-          store.startSnack('error', 'no', 'danger');
+          store.startSnack('حدث خطأ أثناء تسجيل الدخول', 'no', 'danger');
         }
       });
   });
 }
 </script>
+
 <style scoped>
-.login {
-  max-width: 500px;
-  margin: 5% auto;
+.auth-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  padding: 20px;
 }
 
-.img-log {
-  display: block;
-  width: 10%;
-  height: 10%;
-  margin: auto;
+[data-v-theme="dark"] .auth-wrapper {
+  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+}
+
+.auth-card {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-color) !important;
+}
+
+.text-muted {
+  color: var(--text-muted) !important;
 }
 </style>
