@@ -2,7 +2,7 @@
   <!-- Dialogs -->
 
   <v-dialog v-model="dialogOpenIn" max-width="500">
-    <v-card class="pa-4 card-compact">
+    <v-card class="pa-4 card-compact" style="max-height: 90vh; overflow-y: auto;">
       <v-card-title class="d-flex align-center pb-2">
         <v-icon color="primary" class="mr-2">mdi-information-outline</v-icon>
         تفاصيل {{ PreparationData.name }}

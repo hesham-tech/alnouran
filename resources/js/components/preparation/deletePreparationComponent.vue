@@ -8,7 +8,7 @@
     ></v-btn>
 
     <v-dialog v-model="dialogDelete" max-width="400">
-      <v-card class="pa-6 rounded-xl border elevation-4 text-center">
+      <v-card class="pa-6 rounded-xl border elevation-4 text-center" style="max-height: 90vh; overflow-y: auto;">
         <v-icon color="error" size="64" class="mb-4">mdi-alert-circle-outline</v-icon>
         <v-card-title class="justify-center font-weight-bold">تأكيد الحذف</v-card-title>
         <v-card-text class="text-body-1">

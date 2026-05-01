@@ -10,7 +10,7 @@
     </v-btn>
 
     <v-dialog v-model="dialogAddPreparation" max-width="600">
-      <v-card class="rounded-xl border overflow-hidden bg-surface">
+      <v-card class="rounded-xl border bg-surface" style="max-height: 90vh; overflow-y: auto;">
         <div class="pa-6 border-b bg-surface-variant bg-opacity-5 d-flex align-center">
           <v-icon color="success" class="mr-3">mdi-flask-plus-outline</v-icon>
           <span class="text-h6 font-weight-bold">إضافة تحضيرة جديدة</span>
@@ -149,7 +149,7 @@
     </v-dialog>
 
     <v-dialog v-model="dialogError" max-width="400">
-      <v-card class="pa-6 rounded-xl border elevation-4 text-center">
+      <v-card class="pa-6 rounded-xl border elevation-4 text-center" style="max-height: 90vh; overflow-y: auto;">
         <v-icon color="error" size="64" class="mb-4">mdi-alert-circle-outline</v-icon>
         <v-card-title class="justify-center font-weight-bold">خطأ في البيانات</v-card-title>
         <v-card-text>
