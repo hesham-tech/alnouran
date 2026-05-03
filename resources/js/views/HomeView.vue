@@ -163,7 +163,7 @@
               <v-chip
                 size="x-small"
                 variant="flat"
-                color="surface-variant"
+                color="primary"
                 class="w-100 justify-center"
               >
                 {{ date(typePrep.actual_time) }}
