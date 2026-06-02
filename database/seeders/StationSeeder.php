@@ -41,10 +41,24 @@ class StationSeeder extends Seeder
                 'created_at' => now(),
             ]);
         }
-        $Station = DB::table('stations')->where('name', 'الماخرة')->first();
+        $Station = DB::table('stations')->where('name', 'الطبخ')->first();
         if (!$Station) {
             DB::table('stations')->insert([
-                'name' => 'الماخرة',
+                'name' => 'الطبخ',
+                'created_at' => now(),
+            ]);
+        }
+        $Station = DB::table('stations')->where('name', 'النفض')->first();
+        if (!$Station) {
+            DB::table('stations')->insert([
+                'name' => 'النفض',
+                'created_at' => now(),
+            ]);
+        }
+        $Station = DB::table('stations')->where('name', 'التعبئة')->first();
+        if (!$Station) {
+            DB::table('stations')->insert([
+                'name' => 'التعبئة',
                 'created_at' => now(),
             ]);
         }

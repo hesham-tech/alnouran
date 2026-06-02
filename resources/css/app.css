@@ -1,14 +1,25 @@
 .d-f-c {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    align-content: center;
-    flex-wrap: wrap;
-    flex-direction: column;
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+ align-content: center;
+ flex-wrap: wrap;
+ flex-direction: column;
 }
 
 .d-f-r {
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
+ display: flex;
+ justify-content: space-around;
+ align-items: center;
+}
+
+pre {
+ background-color: #e5eeee;
+ text-wrap: wrap;
+ display: block;
+ margin-top: 0;
+ margin-bottom: 1rem;
+ overflow: visible;
+ padding: 2%;
+ font-size: 0.875em;
 }

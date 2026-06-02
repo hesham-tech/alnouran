@@ -29,4 +29,12 @@ class Station extends Model
     {
         return $this->hasMany(Report::class);
     }
+    public function preparations()
+    {
+        return $this->hasMany(Preparation::class);
+    }
+    public function typePreparations()
+    {
+        return $this->hasMany(Preparation::class);
+    }
 }

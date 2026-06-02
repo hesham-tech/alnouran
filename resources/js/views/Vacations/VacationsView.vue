@@ -1,309 +1,242 @@
 <template>
-    <v-btn color="primary" size="60px" variant="text" @click="dialog3 = true" prepend-icon="mdi-cog"></v-btn>
-    <v-dialog v-model="dialog3" width="80%">
-        <v-card>
-            <v-card-title>
-                الاعدادات
-            </v-card-title>
-            <v-card-text @click="dialog3 = false">
-                <addRegularComponent />
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="primary" variant="text" @click="dialog3 = false">
-                    اغلاق
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
-    <div>
+  <div class="pa-4 dashboard-container">
+    <div class="d-flex justify-space-between align-center mb-6">
+      <div class="d-flex align-center">
+        <v-icon color="primary" size="32" class="mr-2">mdi-calendar-clock</v-icon>
+        <h1 class="text-h5 font-weight-bold">الإجازات والغياب</h1>
+      </div>
+      <div class="d-flex gap-2">
+        <v-btn
+          icon="mdi-cog-outline"
+          variant="text"
+          color="secondary"
+          @click="dialogSettings = true"
+        ></v-btn>
         <AddVacationComponent />
-        <v-row class="div-balance text-center">
-            <v-col cols="12" sm="4">
-                <router-link to="/vacations">
-                    <div class=" box-balance">
-                        <div class="item-balance"> الاعتيادية </div>
-                        <div class="item-balance">{{ store.regular }}</div>
-                    </div>
-                </router-link>
-            </v-col>
-            <v-col cols="12" sm="4">
-                <router-link to="/rest">
-                    <div class=" box-balance">
-                        <div class="item-balance"> بدل راحة + </div>
-                        <div class="item-balance">{{ store.rest }}</div>
-                    </div>
-                </router-link>
-            </v-col>
-        </v-row>
-
-        <hr style="margin: auto" />
-        <!-- <router-view></router-view> -->
+      </div>
     </div>
-    <div style="white-space: nowrap; overflow: auto; width: 100%">
-        <div v-if="store.absences.length == ''" class="text-center  m-5">{{ $t("noData") }}</div>
-        <table v-else class="table table-striped">
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th> نوع الاجازة </th>
-                    <th>تاريخ الاجازة</th>
-                    <th>الوصف</th>
-                    <th>تاريخ الانشاء</th>
-                    <th> اجراءات</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr class="box-absence" v-for="(absence, index) in store.absences" @click="ActiveClass(absence)"
-                    @contextmenu="optionsMenu(absence)" :id="'id-' + absence.id">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ $t(absence.Type) }}</td>
-                    <td>{{ absence.date }}</td>
-                    <td>{{ absence.description }}</td>
-                    <td>{{ store.formatDate(absence.created_at) }}</td>
-                    <td><i @click="optionsMenuDots($event, absence)" id="dots-active"
-                            class="mdi mdi-dots-vertical dots-active"></i>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-        <div id="optionsMenu" class="d-f-c">
-            <v-list>
-                <v-list-item @click="dialog2 = true" prepend-icon="mdi-square-edit-outline">تعديل</v-list-item>
-                <v-list-item @click="dialog = !dialog" prepend-icon="mdi-delete">حذف</v-list-item>
-            </v-list>
+
+    <!-- Settings Dialog -->
+    <v-dialog v-model="dialogSettings" max-width="600">
+      <v-card class="pa-4 border rounded-xl bg-surface">
+        <v-card-title class="mb-4">إعدادات الإجازات</v-card-title>
+        <v-card-text>
+          <addRegularComponent />
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" variant="text" @click="dialogSettings = false">إغلاق</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Balance Stats -->
+    <v-row class="mb-6">
+      <v-col cols="12" sm="6" md="4">
+        <v-card class="pa-6 border-primary-lg rounded-xl bg-surface elevation-3 h-100 active-balance-card">
+          <div class="d-flex align-center mb-2">
+            <v-icon color="primary" class="mr-2">mdi-calendar-check</v-icon>
+            <span class="text-subtitle-2 font-weight-bold">الرصيد الاعتيادي</span>
+            <v-spacer></v-spacer>
+            <v-chip size="x-small" color="primary" variant="flat">العرض الحالي</v-chip>
+          </div>
+          <div class="text-h4 font-weight-black color-primary">{{ store.regular }} <small class="text-caption">أيام</small></div>
+        </v-card>
+      </v-col>
+      <v-col cols="12" sm="6" md="4">
+        <v-card
+          to="/rest"
+          class="pa-6 border rounded-xl bg-surface-variant bg-opacity-5 elevation-1 hover-card h-100"
+        >
+          <div class="d-flex align-center mb-2 text-decoration-none">
+            <v-icon color="secondary" class="mr-2">mdi-clock-fast</v-icon>
+            <span class="text-subtitle-2 font-weight-bold">بدل الراحة</span>
+          </div>
+          <div class="text-h4 font-weight-black color-secondary">{{ store.rest }} <small class="text-caption">أيام</small></div>
+          <div class="text-caption mt-1 text-muted">اضغط لعرض التفاصيل ←</div>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Vacations Table -->
+    <v-card class="border rounded-xl overflow-hidden elevation-1">
+      <v-table hover density="comfortable" class="modern-table">
+        <thead>
+          <tr>
+            <th class="text-right">#</th>
+            <th class="text-right">نوع الإجازة</th>
+            <th class="text-right">تاريخ الإجازة</th>
+            <th class="text-right">الوصف</th>
+            <th class="text-right">تاريخ الطلب</th>
+            <th class="text-center">إجراءات</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="(absence, index) in store.absences" :key="absence.id">
+            <td>{{ index + 1 }}</td>
+            <td>
+              <v-chip size="x-small" :color="getTypeColor(absence.Type)" variant="flat" class="font-weight-bold">
+                {{ $t(absence.Type) }}
+              </v-chip>
+            </td>
+            <td class="font-weight-bold text-body-2">{{ absence.date }}</td>
+            <td class="text-caption text-muted">{{ absence.description }}</td>
+            <td class="text-caption">{{ store.formatDate(absence.created_at) }}</td>
+            <td class="text-center">
+              <v-menu location="bottom end">
+                <template v-slot:activator="{ props }">
+                  <v-btn icon="mdi-dots-vertical" variant="text" size="small" v-bind="props"></v-btn>
+                </template>
+                <v-list density="compact" class="rounded-lg elevation-4">
+                  <v-list-item
+                    prepend-icon="mdi-pencil-outline"
+                    title="تعديل"
+                    @click="showEditNotice"
+                  ></v-list-item>
+                  <v-divider class="my-1"></v-divider>
+                  <v-list-item
+                    prepend-icon="mdi-delete-outline"
+                    title="حذف"
+                    color="error"
+                    @click="confirmDelete(absence)"
+                  ></v-list-item>
+                </v-list>
+              </v-menu>
+            </td>
+          </tr>
+        </tbody>
+      </v-table>
+
+      <div v-if="store.absences.length === 0" class="pa-12 text-center">
+        <v-icon size="64" color="secondary" class="mb-4 bg-surface-variant bg-opacity-10 pa-8 rounded-circle">
+          mdi-calendar-remove
+        </v-icon>
+        <div class="text-h6 text-muted">لا يوجد سجل إجازات متاح حالياً</div>
+      </div>
+    </v-card>
+
+    <!-- Delete Confirmation -->
+    <v-dialog v-model="dialogDelete" max-width="400">
+      <v-card class="pa-4 text-center">
+        <v-icon color="error" size="48" class="mb-2">mdi-delete-alert-outline</v-icon>
+        <v-card-title>حذف الطلب؟</v-card-title>
+        <v-card-text>هل تريد حقاً حذف سجل الإجازة بتاريخ <strong>{{ absenceActive?.date }}</strong>؟</v-card-text>
+        <div class="d-flex justify-center gap-2 mt-4">
+          <v-btn color="secondary" variant="text" @click="dialogDelete = false">إلغاء</v-btn>
+          <v-btn color="error" class="rounded-lg" @click="funDelete">تأكيد الحذف</v-btn>
         </div>
+      </v-card>
+    </v-dialog>
 
-        <v-dialog v-model="dialog" width="auto">
-            <v-card>
-                <v-card-title>
-                    تاكيد حذف
-                </v-card-title>
-                <v-card-text>
-                    هل تريد حذف {{ absenceDescription }}
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="primary" variant="text" @click="dialog = false">
-                        لا
-                    </v-btn>
-                    <v-btn color="primary" variant="text" @click="funDelete()">
-                        نعم
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
-        <v-dialog v-model="dialog2" width="auto">
-            <v-card>
-                <v-card-title>
-                    تنبية
-                </v-card-title>
-                <v-card-text>
-                    خاصية التعديل غير متاحه الان <br> بامكانك حذف الاجازة واضافة اجازة اخري
-                </v-card-text>
-                <v-card-actions>
-                    <v-btn color="primary" variant="text" @click="dialog2 = false">
-                        اغلاق
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-
-    </div>
+    <!-- Notice Dialog -->
+    <v-dialog v-model="dialogNotice" max-width="400">
+      <v-card class="pa-4 text-center">
+        <v-icon color="info" size="48" class="mb-2">mdi-information-outline</v-icon>
+        <v-card-title>تنبيه</v-card-title>
+        <v-card-text>خاصية التعديل المباشر غير متاحة حالياً. يرجى حذف الطلب وإضافته من جديد.</v-card-text>
+        <v-btn color="primary" variant="text" @click="dialogNotice = false" class="mt-4">حسناً</v-btn>
+      </v-card>
+    </v-dialog>
+  </div>
 </template>
+
 <script setup>
-import addRegularComponent from "../../components/Vacations/addRegularComponent.vue";
-import { usemainStore } from "../../store/mainStore";
-import AddVacationComponent from "../../components/Vacations/AddVacationComponent.vue";
-import { onMounted, ref } from "vue";
-import axios from "axios";
+import addRegularComponent from '../../components/Vacations/addRegularComponent.vue';
+import AddVacationComponent from '../../components/Vacations/AddVacationComponent.vue';
+import { usemainStore } from '../../store/mainStore';
+import { onMounted, ref } from 'vue';
+import axios from 'axios';
+
 const store = usemainStore();
-const absenceId = ref(0);
-const absenceDescription = ref(0);
-const dialog = ref(false)
-const dialog2 = ref(false)
-const dialog3 = ref(false)
+const dialogDelete = ref(false);
+const dialogSettings = ref(false);
+const dialogNotice = ref(false);
+const absenceActive = ref(null);
+
 onMounted(() => {
-    store.getAbsences();
+  store.getAbsences();
 });
 
-function optionsMenuDots(event, absence) {
-    const optionsMenuEl = document.getElementById('optionsMenu');
-    const styleEl = {
-        display: 'block',
-        top: `${event.pageY + 10}px`,
-        left: `${event.pageX >= 150 ? event.pageX - 100 : event.pageX + 30}px`,
-    };
-    absenceId.value = absence.id;
-    absenceDescription.value = absence.description;
-    Object.assign(optionsMenuEl.style, styleEl);
-
-    // تعريف الدالة المراقبة
-    function funAddEvent(event) {
-        var optionsMenu = document.getElementById('optionsMenu');
-        var dotsActive = document.getElementById('dots-active');
-        var target = event.target;
-
-        if (target.id != dotsActive.id && optionsMenu.style.display == 'block') {
-            optionsMenu.style.display = 'none';
-            // document.removeEventListener('click', funAddEvent);
-        }
-    }
-    // إضافة المراقبة
-    if (optionsMenuEl.style.display == 'block') {
-        document.addEventListener('click', funAddEvent);
-    }
+function getTypeColor(type) {
+  const colors = {
+    'Regular': 'primary',
+    'Sick': 'error',
+    'Emergency': 'warning',
+    'Rest': 'secondary'
+  };
+  return colors[type] || 'info';
 }
-function optionsMenu(absence) {
-    event.preventDefault();
-    const optionsMenuEl = ref(document.getElementById('optionsMenu'));
-    const styleEl = ref({
-        display: 'block',
-        top: `${event.pageY + 10}px`,
-        left: `${event.pageX >= 150 ? event.pageX - 100 : event.pageX + 30}px`,
-    });
-    absenceId.value = absence.id;
-    absenceDescription.value = absence.description;
-    Object.assign(optionsMenuEl.value.style, styleEl.value);
 
-    // تعريف الدالة المراقبة
-    function funAddEvent(event) {
-        var optionsMenu = document.getElementById('optionsMenu');
-        var target = event.target;
-
-        if (!optionsMenu.contains(target) && optionsMenu.style.display === 'block') {
-            optionsMenu.style.display = 'none';
-            // document.removeEventListener('click', funAddEvent);
-        }
-    }
-    // إضافة المراقبة
-    if (optionsMenuEl.value.style.display == 'block') {
-        document.addEventListener('click', funAddEvent);
-    }
-
-    ActiveClass(absence);
+function showEditNotice() {
+  dialogNotice.value = true;
 }
-function ActiveClass(absence) {
 
-    absenceId.value = absence.id;
-    absenceDescription.value = absence.description;
-
-    // إضافة كلاس active إلى العنصر الهدف
-    document.getElementById(`id-${absence.id}`).classList.add('active');
-    // إزالة كلاس active من باقي العناصر
-    Array.from(document.querySelectorAll(`.box-absence`)).forEach(element => {
-        if (element !== document.getElementById(`id-${absence.id}`)) {
-            element.classList.remove('active');
-        }
-    });
-
+function confirmDelete(absence) {
+  absenceActive.value = absence;
+  dialogDelete.value = true;
 }
+
 function funDelete() {
-    axios.delete(`absence/${absenceId.value}`).then(() => {
-        store.getAbsences();
-        dialog.value = false;
-        store.startSnack("success", "no", "success");
-    }).catch(() => {
-        store.startSnack("error", "no", "danger");;
+  axios
+    .delete(`absence/${absenceActive.value.id}`)
+    .then(() => {
+      store.getAbsences();
+      dialogDelete.value = false;
+      store.startSnack('تم حذف سجل الإجازة بنجاح', 'no', 'success');
     })
-    document.getElementById('optionsMenu').style.display = 'none';
+    .catch(() => {
+      store.startSnack('حدث خطأ أثناء الحذف', 'no', 'danger');
+    });
 }
-// function funEdit() {
-//     document.getElementById('optionsMenu').style.display = 'none';
-// }
 </script>
-<style lang="scss">
-.active {
-    td {
-        background-color: #0d6dfd52 !important;
-        color: #4fce06 !important;
-    }
+
+<style scoped>
+.modern-table {
+  background: var(--bg-surface) !important;
 }
 
-.box-fixed {
-    position: sticky !important;
-    top: 73px;
-    z-index: 9999;
-    width: 100%;
-    height: 100%;
+.modern-table thead th {
+  background: var(--bg-main) !important;
+  color: var(--text-muted) !important;
+  font-weight: 700 !important;
+  font-size: 0.8rem !important;
+  border-bottom: 1px solid var(--border-color) !important;
 }
 
-.box-fixed * {
-    position: unset !important;
+.hover-card {
+  transition: all 0.2s ease;
+  cursor: pointer;
+  text-decoration: none !important;
 }
 
-td {
-    user-select: none;
+.hover-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--secondary) !important;
 }
 
-.div-balance {
-    padding: 10px 3px;
-    margin-top: 10px;
-    display: flex;
-    justify-content: space-around;
-    align-items: center;
-    letter-spacing: 2px;
+.color-primary { color: var(--primary) !important; }
+.color-secondary { color: var(--secondary) !important; }
 
-    a {
-        text-decoration: none;
-        color: white;
-    }
+.text-muted { color: var(--text-muted) !important; }
+
+.border-primary-lg {
+  border: 2px solid var(--primary) !important;
 }
 
-.box-balance {
-    border-radius: 8px;
-    background-color: #0d6efd;
-    color: white;
-
-    // padding: .5% 2%;
-    // .mdi-plus {
-    //     font-size: 18px;
-    // }
+.active-balance-card {
+  position: relative;
+  overflow: hidden;
 }
 
-.box-absence {
-    td {
-        font-weight: bold;
-        font-size: 20px;
-
-        .dots-active {
-            text-align: center;
-            display: block;
-            font-weight: bold !important;
-            font-size: 20px;
-            background-color: transparent;
-        }
-    }
+.active-balance-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 4px;
+  height: 100%;
+  background: var(--primary);
 }
 
-#optionsMenu {
-    position: fixed;
-    width: fit-content;
-    border-radius: 6px;
-    text-align: center;
-    z-index: 9999;
-    top: 0px;
-    border: 1px solid gray;
-    overflow: hidden;
-    display: none;
-
-    .v-list-item {
-        border-bottom: 1px solid gray;
-
-        &:last-child {
-            width: 100%;
-            border-bottom: none;
-        }
-
-        * {
-            padding: 0px;
-            margin: 0px;
-            padding-inline-start: 6px;
-            padding-inline-end: 6px;
-        }
-    }
-}
-
-html {
-    overflow-y: auto !important;
-}
+.gap-2 { gap: 8px; }
 </style>

@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 
 class ReportController extends Controller
 {
-
     public function index()
     {
     }
@@ -24,7 +23,12 @@ class ReportController extends Controller
     }
     public function update(Request $request, report $report)
     {
-        //
+        $body = $request->input('body');
+        $station_id = $request->input('station_id');
+        $report->body = $body;
+        $report->station_id = $station_id;
+        $report->save();
+        return $report;
     }
     public function destroy($id)
     {

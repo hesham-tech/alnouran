@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Models\User;
 use Illuminate\Http\Request;
-use TheSeer\Tokenizer\Token;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Providers\RouteServiceProvider;
@@ -16,7 +16,7 @@ class AuthController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        // $this->middleware('guest')->except('logout');
     }
 
     public function login(Request $request)
@@ -52,19 +52,39 @@ class AuthController extends Controller
             ], 401);
         }
     }
-    public function logout(Request $request)
-    {
-        // $tokenId = intval(explode("|", request()->bearerToken())[0]);
-        // $user = $request->user();
-        // $request->session()->invalidate();
-        // $user->tokens()->where('id', $tokenId)->delete();
-        // return response()->json([$tokenId, $user]);
+    // public function logout(Request $request)
+    // {
+       
+    //     $request->user()->currentAccessToken()->delete();
+    //     return response()->json('Logged out successfully', 200);
+    // }
 
-        // تأكد من تسجيل دخول المستخدم
-        // if (!Auth::check()) {
-        //     return response()->json('Unauthorized', 401);
-        // }
-        $request->user()->currentAccessToken()->delete();
-        return response()->json('Logged out successfully', 200);
+    
+// public function logout(Request $request)
+// {
+//     // الحصول على المستخدم الحالي
+//     $user = $request->user();
+
+//     // حذف جميع التوكنات للمستخدم الحالي
+//     $user->tokens()->delete();
+
+//     return response()->json(['message' => 'Successfully logged out'], 200);
+// }
+public function logout(Request $request)
+{
+    $user = $request->user();
+    
+    if ($user) {
+        // If the user was authenticated via a Sanctum token
+        $token = $user->currentAccessToken();
+        if ($token && method_exists($token, 'delete')) {
+            $token->delete();
+        }
+        
+        // Also logout from the session-based guard if active
+        Auth::guard('web')->logout();
     }
+
+    return response()->json(['message' => 'Successfully logged out'], 200);
+}
 }

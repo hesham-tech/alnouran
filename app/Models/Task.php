@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Station;
+use App\Models\Preparation;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -20,7 +21,7 @@ class Task extends Model
         'description',
         'station_id',
         'preparation_id',
-        'user_id',
+        'user_id'
     ];
 
     public function user(){
@@ -30,7 +31,7 @@ class Task extends Model
         return $this->belongsTo(Station::class);
     }
     public function preparation(){
-        return $this->belongsTo(preparations::class);
+        return $this->belongsTo(Preparation::class);
     }
 
 }

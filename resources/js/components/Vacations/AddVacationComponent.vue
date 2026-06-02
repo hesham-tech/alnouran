@@ -1,53 +1,120 @@
 <template>
-    <v-row justify="center">
-        <v-dialog v-model="dialog">
-            <template v-slot:activator="{ props }">
-                <v-btn color="success" @click="setField()" v-bind="props"> طلب اجازة جديد </v-btn>
-            </template>
-            <v-card>
-                <v-card-title>
-                    <span class="text-h5"> طلب اجازة جديد </span>
-                </v-card-title>
-                <v-card-text>
-                    <div v-if="addRequest.Type != 'Rest allowance'" class="alert alert-danger" role="alert">
-                        تنبية ! <br> عدم تحديد فتره تحتوي علي عطلات مثل الجمعة والسبت
-                    </div>
+  <div class="d-inline-block">
+    <v-dialog v-model="dialog" max-width="500">
+      <template v-slot:activator="{ props }">
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-plus"
+          @click="setField()"
+          v-bind="props"
+          class="rounded-lg font-weight-bold elevation-1"
+        >
+          طلب إجازة جديد
+        </v-btn>
+      </template>
 
-                    <v-form class="my-3">
-                        <v-select label="نوع الاجازة" :items="typeRequest" item-title="ar" item-value="en"
-                            v-model="addRequest.Type" variant="outlined" :rules="[(v) => !!v || 'هذا الحقل مطلوب ']">
-                        </v-select>
-                        <div v-if="addRequest.Type != 'Rest allowance'">
-                            <v-textarea label="الوصف" v-model="addRequest.description" variant="outlined" :rows="1"
-                                auto-grow :rules="[(v) => !!v || 'هذا الحقل مطلوب ']">
-                            </v-textarea>
-                        </div>
-                        <div v-if="addRequest.Type == 'Rest allowance'">
-                            <v-select label="البدلات" :items="activeRest" item-title="description" item-value="id"
-                                v-model="addRequest.rest_id" variant="outlined" :rules="[(v) => !!v || 'هذا الحقل مطلوب ']">
-                            </v-select>
-                        </div>
-                        <v-text-field :label="addRequest.Type == 'Rest allowance' ? ' تاريخ الاجازة' : '  بداية الاجازه '"
-                            type="date" v-model="addRequest.start_date" variant="outlined"></v-text-field>
-                        <div v-if="addRequest.Type != 'Rest allowance'">
-                            <v-text-field label="نهاية الاجازة" type="date" v-model="addRequest.end_date"
-                                variant="outlined"></v-text-field>
-                        </div>
-                        <v-checkbox v-model="dailyFife" label=" نص يوم " color="red"></v-checkbox>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions>
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue-darken-1" variant="text" @click="dialog = false">
-                        اغلاق
-                    </v-btn>
-                    <v-btn color="blue-darken-1" variant="text" @click="saveRequest">
-                        حفظ
-                    </v-btn>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-    </v-row>
+      <v-card class="rounded-xl border overflow-hidden bg-surface">
+        <div class="pa-6 border-b bg-surface-variant bg-opacity-5 d-flex align-center">
+          <v-icon color="primary" class="mr-3">mdi-calendar-plus</v-icon>
+          <span class="text-h6 font-weight-bold">طلب إجازة جديد</span>
+          <v-spacer></v-spacer>
+          <v-btn icon="mdi-close" variant="text" size="small" @click="dialog = false"></v-btn>
+        </div>
+
+        <v-card-text class="pa-6">
+          <v-alert
+            v-if="addRequest.Type != 'Rest allowance'"
+            type="warning"
+            variant="tonal"
+            density="compact"
+            class="mb-6 rounded-lg text-caption"
+            border="start"
+          >
+            تنبيه: يرجى عدم تحديد أيام عطلات رسمية (الجمعة والسبت) ضمن الفترة.
+          </v-alert>
+
+          <v-form ref="form" @submit.prevent="saveRequest">
+            <div class="d-flex align-center mb-4">
+              <v-checkbox
+                v-model="dailyFife"
+                label="نصف يوم"
+                color="error"
+                hide-details
+                density="compact"
+              ></v-checkbox>
+            </div>
+
+            <v-select
+              v-model="addRequest.Type"
+              label="نوع الإجازة"
+              :items="typeRequest"
+              item-title="ar"
+              item-value="en"
+              variant="outlined"
+              class="mb-4"
+              prepend-inner-icon="mdi-format-list-bulleted-type"
+              :rules="[v => !!v || 'هذا الحقل مطلوب']"
+            ></v-select>
+
+            <div v-if="addRequest.Type != 'Rest allowance'">
+              <v-textarea
+                v-model="addRequest.description"
+                label="الوصف / السبب"
+                variant="outlined"
+                rows="2"
+                auto-grow
+                class="mb-4"
+                prepend-inner-icon="mdi-text-subject"
+                :rules="[v => !!v || 'هذا الحقل مطلوب']"
+              ></v-textarea>
+            </div>
+
+            <div v-if="addRequest.Type == 'Rest allowance'">
+              <v-select
+                v-model="addRequest.rest_id"
+                label="اختر من البدلات المتاحة"
+                :items="activeRest"
+                item-title="description"
+                item-value="id"
+                variant="outlined"
+                class="mb-4"
+                prepend-inner-icon="mdi-clock-check-outline"
+                :rules="[v => !!v || 'هذا الحقل مطلوب']"
+              ></v-select>
+            </div>
+
+            <v-row dense>
+              <v-col cols="12" :sm="addRequest.Type == 'Rest allowance' ? 12 : 6">
+                <v-text-field
+                  v-model="addRequest.start_date"
+                  :label="addRequest.Type == 'Rest allowance' ? 'تاريخ الإجازة' : 'بداية الإجازة'"
+                  type="date"
+                  variant="outlined"
+                  class="mb-4"
+                  prepend-inner-icon="mdi-calendar-start"
+                ></v-text-field>
+              </v-col>
+              <v-col cols="12" sm="6" v-if="addRequest.Type != 'Rest allowance'">
+                <v-text-field
+                  v-model="addRequest.end_date"
+                  label="نهاية الإجازة"
+                  type="date"
+                  variant="outlined"
+                  class="mb-4"
+                  prepend-inner-icon="mdi-calendar-end"
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-card-text>
+
+        <div class="pa-6 border-t d-flex justify-end gap-2 bg-surface-variant bg-opacity-5">
+          <v-btn color="secondary" variant="text" @click="dialog = false" class="rounded-lg px-6">إلغاء</v-btn>
+          <v-btn color="primary" @click="saveRequest" class="rounded-lg px-8 font-weight-bold">حفظ الطلب</v-btn>
+        </div>
+      </v-card>
+    </v-dialog>
+  </div>
     <v-dialog v-model="dialog2" width="auto">
         <v-card>
             <v-card-title v-if="Array.isArray(absenceEixist)">
@@ -108,7 +175,6 @@ const typeRequest = ref([
 ]
 );
 onMounted(() => {
-
     store.getAbsences().then(() => {
         const restallowance = ref(store.restallowance);
         if (restallowance.value) {
@@ -142,14 +208,11 @@ function saveRequest() {
             store.getAbsences();
             addRequest.value = ref({});
             dialog.value = false;
-            // store.printLog = re.data;
-            // dialog5.value = true;
         })
         .catch((er) => {
-            // store.printLog = er.response;
-            // dialog5.value = true;
+            // console.log(er.response.data);
             if (Array.isArray(er.response.data)) {
-                absenceEixist.value = e.response.data;
+                absenceEixist.value = er.response.data;
             } else {
                 absenceEixist.value = ' حدث خطا اعد المحاولة';
             }

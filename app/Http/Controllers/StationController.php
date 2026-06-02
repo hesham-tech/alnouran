@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Station;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class StationController extends Controller
@@ -41,13 +40,12 @@ class StationController extends Controller
     }
     public function show(string $id)
     {
+        // $Station = Station::with('users', 'reports.comments', 'tasks')->find($id);
         $Station = Station::find($id);
-        $Station->tasks;
+        $Station->load('users', 'reports.comments.user', 'reports.user', 'tasks');
 
         if ($Station) {
-            return response()->json([
-                'Station' => $Station,
-            ]);
+            return  $Station;
         } else {
             return Response()->json([
                 'message' => 'no Station'

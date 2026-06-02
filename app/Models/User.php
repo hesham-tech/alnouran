@@ -15,7 +15,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-
     protected $fillable = [
         'name',
         'email',
@@ -61,5 +60,10 @@ class User extends Authenticatable
     function restallowance()
     {
         return $this->hasOne(Restallowance::class);
+    }
+
+    public function preparations()
+    {
+        return $this->hasMany(Preparation::class);
     }
 }

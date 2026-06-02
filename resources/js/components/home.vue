@@ -1,3 +1,3 @@
 <template>
-    <h2>componet home</h2>
+  <h2>componet home</h2>
 </template>

@@ -15,6 +15,13 @@ class Absence extends Model
         'user_id',
         'rest_id'
     ];
+
+    public static function saveItem($data)
+    {
+        return Absence::Create($data);
+    }
+
+
     public function user()
     {
         return $this->belongsTo(User::class);
